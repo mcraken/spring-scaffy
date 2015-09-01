@@ -6,7 +6,7 @@ Scaffy is a simple library that helps you create applications based on the sprin
 - Caching 
 - Security (OAuth2). 
 
-## Reusable code templates  
+## Reusable Code Templates  
 Scaffy's objective is to provide code templates for traditional services you usually have to code in modern web applications like:
 - Code templates based on spring's lovely rest controller to create Restful CRUD / Multipart web services.
 - Code templates based on spring for web socket programming.
