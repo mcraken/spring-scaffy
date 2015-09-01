@@ -19,12 +19,12 @@ import javax.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.scaffy.query.criteriahandlers.CriteriaHandler;
 import com.scaffy.query.exception.BadCriteriaValueException;
 import com.scaffy.query.exception.CriteriaIDNotFoundException;
 import com.scaffy.query.exception.CriteriaNotFoundException;
 import com.scaffy.query.exception.InvalidCriteriaException;
 import com.scaffy.query.exception.InvalidCriteriaSyntaxException;
+import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
 import com.scaffy.query.key.RestCriteria;
 import com.scaffy.query.key.RestSearchKey;
 

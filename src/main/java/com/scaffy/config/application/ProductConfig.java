@@ -17,14 +17,14 @@ import com.scaffy.product.ProductFactory;
 import com.scaffy.product.ProductFactoryExcpetion;
 import com.scaffy.product.ProductFactoryLine;
 import com.scaffy.product.RestModel;
-import com.scaffy.query.criteriahandlers.CriteriaHandler;
-import com.scaffy.query.criteriahandlers.EqualCriteriaHandler;
-import com.scaffy.query.criteriahandlers.GreaterThanCriterionHandler;
-import com.scaffy.query.criteriahandlers.GreaterThanOrEqualCriterionHandler;
-import com.scaffy.query.criteriahandlers.LessThanCriterionHandler;
-import com.scaffy.query.criteriahandlers.LessThanOrEqualCriterionHandler;
-import com.scaffy.query.criteriahandlers.LikeCriteriaHandler;
-import com.scaffy.query.criteriahandlers.LogicalCriteriaHandler;
+import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
+import com.scaffy.query.jpa.criteriahandlers.EqualCriteriaHandler;
+import com.scaffy.query.jpa.criteriahandlers.GreaterThanCriterionHandler;
+import com.scaffy.query.jpa.criteriahandlers.GreaterThanOrEqualCriterionHandler;
+import com.scaffy.query.jpa.criteriahandlers.LessThanCriterionHandler;
+import com.scaffy.query.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
+import com.scaffy.query.jpa.criteriahandlers.LikeCriteriaHandler;
+import com.scaffy.query.jpa.criteriahandlers.LogicalCriteriaHandler;
 
 @Configuration
 public class ProductConfig implements BeanDefinitionRegistryPostProcessor{

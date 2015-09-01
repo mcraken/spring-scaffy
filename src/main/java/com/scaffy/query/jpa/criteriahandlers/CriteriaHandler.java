@@ -1,4 +1,4 @@
-package com.scaffy.query.criteriahandlers;
+package com.scaffy.query.jpa.criteriahandlers;
 
 import java.util.Map;
 
