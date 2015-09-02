@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.User;
  * <p>SpringSecurityAuditorAware class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * A database auditor aware extracts username information from the
  * current execution context.

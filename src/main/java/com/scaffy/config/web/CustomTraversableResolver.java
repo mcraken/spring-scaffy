@@ -10,7 +10,7 @@ import javax.validation.TraversableResolver;
  * <p>CustomTraversableResolver class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * It's a dummy implementation for a resolver that looks for validation providers.
  * Had to use to fix a limitation in WebSphere that provides a deprecated built-in

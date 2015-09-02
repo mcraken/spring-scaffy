@@ -7,7 +7,7 @@ import com.google.gson.FieldAttributes;
  * <p>AnnotationExeclusionStrategy class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * Exclusion strategy used by the JSON marshaler. It excludes any class or filed
  * from serialization once marked with an exclude annotation.

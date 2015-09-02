@@ -8,7 +8,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  * <p>CustomValidator class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * A custom auto validation magic. In most deployment environment, this class is created
  * automatically. Had to create one manually due to limitations in the WebSphere.

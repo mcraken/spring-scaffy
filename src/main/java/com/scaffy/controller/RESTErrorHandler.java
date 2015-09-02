@@ -20,7 +20,7 @@ import com.scaffy.service.NoDataFoundException;
  * <p>RESTErrorHandler class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * RESTErrorHandler is an advice controller. It handles argument validation errors,
  * binding errors and finally runtime exceptions

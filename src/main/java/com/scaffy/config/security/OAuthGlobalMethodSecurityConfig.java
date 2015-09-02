@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
  * <p>GlobalMethodSecurityConfig class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * A global method security configurations class. This class configures the means for
  * securing methods using PreAuthorize annotations instead of using explicit links.
