@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
 @Configuration
-@PropertySource("classpath:database.properties")
+@PropertySource("classpath:scaffy.properties")
 public class SpringJNDIDatasourceConfig {
 	
 	@Value("${database.datasource.jndi}")

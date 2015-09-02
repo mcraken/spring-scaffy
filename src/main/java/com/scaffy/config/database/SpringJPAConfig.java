@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableJpaRepositories
 @EnableTransactionManagement(proxyTargetClass = true)
-@PropertySource("classpath:database.properties")
+@PropertySource("classpath:scaffy.properties")
 public class SpringJPAConfig {
 	
 	private JpaVendorAdapter vendoAdapter;
