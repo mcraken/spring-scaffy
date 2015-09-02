@@ -1,22 +1,19 @@
 package com.scaffy.config.application;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import com.scaffy.product.BasicRestServiceProductLine;
 import com.scaffy.product.ProductFactory;
 import com.scaffy.product.ProductFactoryExcpetion;
-import com.scaffy.product.ProductFactoryLine;
-import com.scaffy.product.RestModel;
 import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
 import com.scaffy.query.jpa.criteriahandlers.EqualCriteriaHandler;
 import com.scaffy.query.jpa.criteriahandlers.GreaterThanCriterionHandler;
@@ -29,11 +26,7 @@ import com.scaffy.query.jpa.criteriahandlers.LogicalCriteriaHandler;
 @Configuration
 public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-
-		return new PropertySourcesPlaceholderConfigurer();
-	}
+	private static Logger logger = LoggerFactory.getLogger(ProductConfig.class);
 	
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
@@ -45,16 +38,16 @@ public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 		
 		try {
 			
-			ProductFactory productFactory = new ProductFactory("com.test.entities", registry);
+			ProductFactory productFactory = new ProductFactory(
+					"com.scaffy.product",
+					"com.test.entities", 
+					registry);
 			
-			ArrayList<ProductFactoryLine<RestModel>> productLines = new ArrayList<ProductFactoryLine<RestModel>>();
-			
-			productLines.add(new BasicRestServiceProductLine());
-			
-			productFactory.produce(RestModel.class, productLines);
+			productFactory.produce();
 			
 		} catch (ProductFactoryExcpetion e) {
-			e.printStackTrace();
+			
+			logger.error("Product Factory Failed!", e);
 		}
 
 	}

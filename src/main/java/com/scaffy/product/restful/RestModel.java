@@ -1,4 +1,4 @@
-package com.scaffy.product;
+package com.scaffy.product.restful;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
