@@ -134,11 +134,6 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.driver.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.oracle.driver</groupId>
-			<artifactId>ojdbc-driver</artifactId>
-			<version>14</version>
-		</dependency>
 
 		<!-- Other Web dependencies -->
 		<dependency>
