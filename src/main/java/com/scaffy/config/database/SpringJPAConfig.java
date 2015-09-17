@@ -20,18 +20,19 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement(proxyTargetClass = true)
 @PropertySource("classpath:scaffy.properties")
 public class SpringJPAConfig {
+
+	@Autowired
+	private DataSource dataSource;
 	
+	@Autowired
 	private JpaVendorAdapter vendoAdapter;
 	
 	@Value("${database.jpa.entities}")
 	private String entityPackages;
 	
-	@Value("${database.jpa.persistence}")
-	private String persistenceLocation;
-	
 	@Bean
 	@Autowired
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		
 		LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 		
@@ -40,8 +41,6 @@ public class SpringJPAConfig {
 		factoryBean.setJpaVendorAdapter(vendoAdapter);
 		
 		factoryBean.setPackagesToScan(entityPackages.split(","));
-		
-		factoryBean.setPersistenceXmlLocation(persistenceLocation);
 		
 		return factoryBean;
 	}

@@ -1,6 +1,7 @@
 package com.scaffy.product;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 
 import javassist.CannotCompileException;
@@ -22,31 +23,51 @@ public class ProductFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(ProductFactory.class);
 	
-	private String runtimePackage;
+	private String[] runtimePackages;
 
 	private BeanDefinitionRegistry registry;
 
-	private String productLinePackage;
+	private String[] productLinePackages;
 
 	public ProductFactory(
-			String productLinePackage,
-			String runtimePackage,
+			String[] productLinePackages,
+			String[] runtimePackages,
 			BeanDefinitionRegistry registry) {
 		
-		this.runtimePackage = runtimePackage;
+		this.runtimePackages = runtimePackages;
 		this.registry = registry;
-		this.productLinePackage = productLinePackage;
+		this.productLinePackages = productLinePackages;
 	}
 
-	private <T extends Annotation>Set<BeanDefinition> getBeanDefinitionsByAnnotation(Class<T> annotationClass, String targetPackage) {
+	private <T extends Annotation>Set<BeanDefinition> getBeanDefinitionsByAnnotation(Class<T> annotationClass, String[] targetPackages) throws NoBeansFoundException {
 
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
 
 		provider.addIncludeFilter(new AnnotationTypeFilter(annotationClass));
-
-		Set<BeanDefinition> beans = provider.findCandidateComponents(targetPackage);
-
-		return beans;
+		
+		Set<BeanDefinition> allBeans = new HashSet<BeanDefinition>(); 
+		
+		Set<BeanDefinition> beans = null;
+		
+		for(String targetPackage : targetPackages) {
+			
+			beans = provider.findCandidateComponents(targetPackage);
+			
+			if(beans != null && beans.size() != 0)
+				allBeans.addAll(beans);
+		}
+		
+		if(allBeans.size() == 0){
+			
+			String packages = "No beans found under: ";
+			
+			for(String targetPackage : targetPackages)
+				packages += targetPackage + " ";
+			
+			throw new NoBeansFoundException(packages);
+		}
+		
+		return allBeans;
 	}
 
 	private Class<?> weave(String className, String beanClassName, AnnotationWeavelet... annotationWeavelets) throws NotFoundException, CannotCompileException {
@@ -104,13 +125,13 @@ public class ProductFactory {
 			
 			Set<BeanDefinition> runtimeBeans = null;
 			
-			Set<BeanDefinition> productLineBeans = getBeanDefinitionsByAnnotation(ProductLine.class, productLinePackage);
+			Set<BeanDefinition> productLineBeans = getBeanDefinitionsByAnnotation(ProductLine.class, productLinePackages);
 			
 			for(BeanDefinition productLineBean : productLineBeans){
 
 				productLineAnnotation = getTargetAnnotation(productLineBean, ProductLine.class);
 				
-				runtimeBeans = getBeanDefinitionsByAnnotation(productLineAnnotation.runtimeAnnotationClass(), runtimePackage);
+				runtimeBeans = getBeanDefinitionsByAnnotation(productLineAnnotation.runtimeAnnotationClass(), runtimePackages);
 				
 				for(BeanDefinition runtimeBean : runtimeBeans){
 					

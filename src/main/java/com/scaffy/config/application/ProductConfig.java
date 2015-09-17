@@ -1,5 +1,7 @@
 package com.scaffy.config.application;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -9,11 +11,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.context.annotation.Configuration;
 
 import com.scaffy.product.ProductFactory;
-import com.scaffy.product.ProductFactoryExcpetion;
 
 @Configuration
 public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 
+	
 	private static Logger logger = LoggerFactory.getLogger(ProductConfig.class);
 	
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
@@ -26,18 +28,22 @@ public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 		
 		try {
 			
+			Properties prop = new Properties();
+			
+			prop.load(getClass().getClassLoader().getResourceAsStream("scaffy.properties"));
+			
 			ProductFactory productFactory = new ProductFactory(
-					"com.scaffy.product",
-					"com.test.entities", 
+					prop.getProperty("scaffy.products.productPackages").split(","),
+					prop.getProperty("scaffy.products.runtimePackages").split(","), 
 					registry);
 			
 			productFactory.produce();
 			
-		} catch (ProductFactoryExcpetion e) {
+		} catch (Exception e) {
 			
 			logger.error("Product Factory Failed!", e);
 		}
 
 	}
-
+	
 }
