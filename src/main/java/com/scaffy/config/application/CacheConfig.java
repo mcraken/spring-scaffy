@@ -10,11 +10,9 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 
 import com.google.common.cache.CacheBuilder;
 
-@PropertySource("classpath:scaffy.properties")
 @EnableCaching
 public class CacheConfig {
 	

@@ -1,4 +1,4 @@
-package com.scaffy.config.web;
+package com.scaffy.config.web.validation;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

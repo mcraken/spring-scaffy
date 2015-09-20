@@ -1,4 +1,4 @@
-package com.scaffy.config.web;
+package com.scaffy.config.web.validation;
 
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;

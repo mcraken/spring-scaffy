@@ -1,4 +1,4 @@
-package com.scaffy.config.web;
+package com.scaffy.config.web.validation;
 
 import java.lang.annotation.ElementType;
 

@@ -15,7 +15,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -45,23 +44,14 @@ public class MasterRestController {
 	
 	private HashMap<String, RestService> restServices;
 	
-	@PostConstruct
-	public void init() {
+	private RestService findRestService(String resourceName) throws NoDataFoundException {
 		
-		Map<String, RestService> definedServices = applicationContext.getBeansOfType(RestService.class);
+		RestService restService = restServices.get(resourceName);
 		
-		restServices = new HashMap<String, RestService>();
+		if(restService == null)
+			throw new NoDataFoundException("Could not find resource " + resourceName);
 		
-		for(String ser : definedServices.keySet().toArray(new String[]{})){
-			restServices.put(
-					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
-					definedServices.get(ser)
-					);
-		}
-			
-	}
-	
-	public void initBinder(WebDataBinder binder) {
+		return restService;
 	}
 	
 	private <T>T bindAndValidate(String modelName, String jsonBody, Class<T> modelClass)
@@ -79,6 +69,22 @@ public class MasterRestController {
 		return model;
 	}
 	
+	@PostConstruct
+	public void init() {
+		
+		Map<String, RestService> definedServices = applicationContext.getBeansOfType(RestService.class);
+		
+		restServices = new HashMap<String, RestService>();
+		
+		for(String ser : definedServices.keySet().toArray(new String[]{})){
+			restServices.put(
+					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
+					definedServices.get(ser)
+					);
+		}
+			
+	}
+	
 	@RequestMapping(value = "/query", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	public @ResponseBody ResponseEntity<SuccessResponse> query(
 			@RequestHeader("Search-Key") String searchKey
@@ -88,22 +94,24 @@ public class MasterRestController {
 		
 		restSearchKey.parseAllCriterias();
 		
-		RestService restService = restServices.get(restSearchKey.getResourceName());
+		String resourceName = restSearchKey.getResourceName();
+		
+		RestService restService = findRestService(resourceName);
 		
 		List<?> result = restService.query(restSearchKey);
 		
 		return new ResponseEntity<SuccessResponse>(new SuccessResponse(result), HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/{modelName}", method = RequestMethod.POST, 
 			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public ResponseEntity<SuccessResponse> post(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException {
+			) throws BindException, NoDataFoundException {
 		
-		RestService restService = restServices.get(modelName);
+		RestService restService = findRestService(modelName);
 		
 		Object model = bindAndValidate(modelName, body, restService.getModelClass());
 		
@@ -120,9 +128,9 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> put(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException {
+			) throws BindException, NoDataFoundException {
 		
-		RestService restService = restServices.get(modelName);
+		RestService restService = findRestService(modelName);
 		
 		Object model = bindAndValidate(modelName, body, restService.getModelClass());
 		
@@ -138,9 +146,9 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> delete(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException {
+			) throws BindException, NoDataFoundException {
 		
-		RestService restService = restServices.get(modelName);
+		RestService restService = findRestService(modelName);
 		
 		Object model = bindAndValidate(modelName, body, restService.getModelClass());
 		

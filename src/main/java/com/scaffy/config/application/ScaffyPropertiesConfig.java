@@ -7,7 +7,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @PropertySource("classpath:scaffy.properties")
-public class PropertyPlaceholderConfig {
+public class ScaffyPropertiesConfig {
 
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
