@@ -1,18 +1,21 @@
 package com.scaffy.weave;
 
-import org.aspectj.lang.annotation.Before;
-
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 
-public class BeforeBuilder extends AnnotationBuilder{
+public class JoinPointBuilder extends AnnotationBuilder{
 
 	private String expression;
 	
-	public BeforeBuilder(String expression) {
-		super(Before.class.getName());
+	public JoinPointBuilder(Class<?> target, String targetClassName, String method) {
 		
-		this.expression = expression;
+		super(target.getName());
+		
+		this.expression = "execution(* "
+				+ targetClassName
+				+ "."
+				+ method
+				+ "(..))";
 	}
 
 	@Override

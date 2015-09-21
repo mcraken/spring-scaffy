@@ -3,12 +3,13 @@ package com.scaffy.product.interceptor;
 import javax.annotation.PostConstruct;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 @Aspect
-public class BeforeProductInterceptor {
+public class ProductInterceptor {
 	
 	private PointInterceptor pointInterceptor;
 	
@@ -26,8 +27,29 @@ public class BeforeProductInterceptor {
 		pointInterceptor = (PointInterceptor) context.getBean(pointInterceptorClass);
 	}
 	
-	public void execute(JoinPoint joinPoint) {
+	public void before(JoinPoint joinPoint) {
 		
-		pointInterceptor.executePoint(joinPoint.getArgs()[0]);
+		((BeforePointInterceptor)pointInterceptor).before(joinPoint.getArgs()[0]);
+	}
+	
+	public void after(JoinPoint joinPoint) {
+		
+		((AfterPointInterceptor)pointInterceptor).after(joinPoint.getArgs()[0]);
+	}
+	
+	public void around(ProceedingJoinPoint joinPoint) {
+		
+		try {
+			
+			before(joinPoint);
+			
+			joinPoint.proceed();
+			
+			after(joinPoint);
+			
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

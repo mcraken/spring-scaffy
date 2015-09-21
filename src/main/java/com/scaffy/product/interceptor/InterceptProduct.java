@@ -7,11 +7,17 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface BeforeProduct {
+public @interface InterceptProduct {
+	
+	enum JoinPoint {
+		BEFORE, AFTER, AROUND;
+	}
 	
 	Class<?> productClass();
 	
 	Class<?> runtimeClass();
 	
 	String method();
+	
+	JoinPoint join();
 }
