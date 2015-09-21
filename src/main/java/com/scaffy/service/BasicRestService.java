@@ -50,20 +50,6 @@ public class BasicRestService implements RestService{
 		entityManager = emf.createEntityManager();
 	}
 	
-	public List<?> query(
-			RestSearchKey restSearchKey
-			) throws InvalidCriteriaException, InvalidCriteriaSyntaxException,
-						NoDataFoundException
-	{
-		
-		List<?> result = read(restSearchKey, modelClass); 
-		
-		if(result == null || result.size() == 0)
-			throw new NoDataFoundException("Nothing matches your key");
-		
-		return result; 
-	}
-	
 	private <T> List<T> read(RestSearchKey key, Class<T> typeClass) throws InvalidCriteriaException {
 
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -175,6 +161,20 @@ public class BasicRestService implements RestService{
 		}
 
 		handler.handle(crt, crtsMap, root, criteriaBuilder);
+	}
+	
+	public List<?> query(
+			RestSearchKey restSearchKey
+			) throws InvalidCriteriaException, InvalidCriteriaSyntaxException,
+						NoDataFoundException
+	{
+		
+		List<?> result = read(restSearchKey, modelClass); 
+		
+		if(result == null || result.size() == 0)
+			throw new NoDataFoundException("Nothing matches your key");
+		
+		return result; 
 	}
 	
 	public <T> void save(T model) {

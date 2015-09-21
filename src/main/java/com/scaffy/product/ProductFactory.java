@@ -90,12 +90,15 @@ public class ProductFactory {
 	}
 
 	private void registerProduct(
-			Annotation targetAnnotation,
-			Class<?> productClass, 
+			ProductLine productLineAnnotation,
 			BeanDefinition runtimeBean,
 			BeanDefinition productLineBean) throws NotFoundException,
 			CannotCompileException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 
+		Annotation targetAnnotation = getTargetAnnotation(runtimeBean, productLineAnnotation.runtimeAnnotationClass());
+		
+		Class<?> productClass = productLineAnnotation.productClass();
+		
 		logger.info(
 				"Weaving " + targetAnnotation.annotationType().getName() +
 				", on Product Type " + productClass.getName() +
@@ -104,17 +107,24 @@ public class ProductFactory {
 		
 		ProductFactoryLine productLine = (ProductFactoryLine) Class.forName(productLineBean.getBeanClassName()).newInstance();
 		
-		Class<?> clazz = weave(
+		Class<?> annotatedProductClass = weave(
 				productClass.getName(),
 				runtimeBean.getBeanClassName(),
 				productLine.createWeavelets(targetAnnotation)
 				);
 
-		RootBeanDefinition rootDefinition = new RootBeanDefinition(clazz, Autowire.BY_TYPE.value(), true);
+		Class<?> runtimeBeanClass = Class.forName(runtimeBean.getBeanClassName());
+		
+		RootBeanDefinition productBean = new RootBeanDefinition(annotatedProductClass, Autowire.BY_TYPE.value(), true);
+		
+		RootBeanDefinition runtimeBeanDef = new RootBeanDefinition(runtimeBeanClass, Autowire.BY_TYPE.value(), true);
+		
+		productLine.beforeRegistration(productBean, runtimeBeanDef);
 
-		productLine.beforeRegistration(rootDefinition, runtimeBean);
-
-		registry.registerBeanDefinition(clazz.getName(), rootDefinition);
+		registry.registerBeanDefinition(annotatedProductClass.getName(), productBean);
+		
+		if(productLineAnnotation.registerRuntimeBean())
+			registry.registerBeanDefinition(runtimeBeanClass.getName(), runtimeBeanDef);
 	}
 
 	public void produce() throws ProductFactoryExcpetion {
@@ -136,8 +146,7 @@ public class ProductFactory {
 				for(BeanDefinition runtimeBean : runtimeBeans){
 					
 					registerProduct(
-							getTargetAnnotation(runtimeBean, productLineAnnotation.runtimeAnnotationClass()), 
-							productLineAnnotation.productClass(), 
+							productLineAnnotation, 
 							runtimeBean,
 							productLineBean
 							);

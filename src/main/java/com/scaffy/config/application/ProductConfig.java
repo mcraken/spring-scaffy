@@ -9,13 +9,14 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.scaffy.product.ProductFactory;
 
 @Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 
-	
 	private static Logger logger = LoggerFactory.getLogger(ProductConfig.class);
 	
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
