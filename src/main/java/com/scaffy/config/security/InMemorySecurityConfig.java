@@ -13,14 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class InMemorySecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	@Value("security.inmemory.users")
+	@Value("${security.inmemory.users}")
 	private String users;
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
 		
 		String[] userParts;
-		
+		 
 		for(String user : users.split(",")){
 			
 			userParts = user.split(":");
@@ -28,7 +28,7 @@ public class InMemorySecurityConfig extends WebSecurityConfigurerAdapter {
 			auth.inMemoryAuthentication()
 			.withUser(userParts[0])
 			.password(userParts[1])
-			.authorities(userParts[2].split("+"));
+			.authorities(userParts[2].split("\\+"));
 		}
 		
 	}
