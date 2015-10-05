@@ -2,7 +2,6 @@ package com.scaffy.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -33,8 +32,7 @@ public class ResourceServer extends ResourceServerConfigurerAdapter{
 			.and()
 		.antMatcher("/app/**")
 		.authorizeRequests()
-		.antMatchers(HttpMethod.POST, "/oauth/**").authenticated()
-			.antMatchers("/app/**").authenticated()
+		.antMatchers("/app/**").authenticated()
 			.and()
 		.csrf()
 			.disable();
