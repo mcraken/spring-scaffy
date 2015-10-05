@@ -1,6 +1,7 @@
 package com.scaffy.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -11,16 +12,22 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @Configuration
 @EnableResourceServer
-public class ResourceServer extends ResourceServerConfigurerAdapter{
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	
 	@Autowired
 	private TokenStore tokenStore;
+	
+	@Value("resourceId")
+	private String resourceId;
+	
+	@Value("rootUrl")
+	private String rootUrl;
 	
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources)
 			throws Exception {
 		
-		resources.resourceId("test").tokenStore(tokenStore);
+		resources.resourceId(resourceId).tokenStore(tokenStore);
 		
 	}
 	
@@ -30,9 +37,9 @@ public class ResourceServer extends ResourceServerConfigurerAdapter{
 		http
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
-		.antMatcher("/app/**")
+		.antMatcher(rootUrl)
 		.authorizeRequests()
-		.antMatchers("/app/**").authenticated()
+		.antMatchers(rootUrl).authenticated()
 			.and()
 		.csrf()
 			.disable();
