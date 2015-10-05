@@ -105,6 +105,11 @@
 			<artifactId>spring-security-oauth2</artifactId>
 			<version>${spring-security-oauth2.verison}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-ldap</artifactId>
+			<version>${spring-security.verison}</version>
+		</dependency>
 
 		<!--Apache Commons -->
 		<dependency>

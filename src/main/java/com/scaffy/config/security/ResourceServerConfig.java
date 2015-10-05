@@ -17,10 +17,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	@Autowired
 	private TokenStore tokenStore;
 	
-	@Value("resourceId")
+	@Value("security.oauth.resourceId")
 	private String resourceId;
 	
-	@Value("rootUrl")
+	@Value("security.oauth.rootUrl")
 	private String rootUrl;
 	
 	@Override
