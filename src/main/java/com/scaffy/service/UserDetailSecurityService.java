@@ -1,25 +1,40 @@
 package com.scaffy.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.scaffy.entity.security.ScaffyUser;
-import com.scaffy.repository.UserRepository;
+import com.scaffy.entity.security.UserAccount;
 
 public class UserDetailSecurityService implements UserDetailsService{
-	
-	@Autowired
-	private UserRepository userRepository;
-	
+
+	private EntityManager entityManager;
+
+	public UserDetailSecurityService(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-		ScaffyUser user = userRepository.findByUsernameLike(username);
 		
-		if(user == null)
-			throw new UsernameNotFoundException(username);
+		EntityTransaction t = entityManager.getTransaction();
+		
+		try{
+			
+			t.begin();
+			
+			UserAccount user = entityManager.find(UserAccount.class, username);
 
-		return user.createUser();
+			if(user == null)
+				throw new UsernameNotFoundException(username);
+
+			return user.createUser();
+			
+		} finally {
+			
+			t.commit();
+		}
 	}
 }

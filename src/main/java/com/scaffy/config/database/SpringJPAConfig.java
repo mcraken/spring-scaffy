@@ -1,5 +1,6 @@
 package com.scaffy.config.database;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -25,8 +26,8 @@ public class SpringJPAConfig {
 	@Autowired
 	private JpaVendorAdapter vendoAdapter;
 	
-	@Value("${database.jpa.entities}")
-	private String entityPackages;
+	@Value("${database.jpa.unit}")
+	private String persistenceUnit;
 	
 	@Bean
 	@Autowired
@@ -38,7 +39,7 @@ public class SpringJPAConfig {
 		
 		factoryBean.setJpaVendorAdapter(vendoAdapter);
 		
-		factoryBean.setPackagesToScan(entityPackages.split(","));
+		factoryBean.setPersistenceUnitName(persistenceUnit);
 		
 		return factoryBean;
 	}
@@ -52,5 +53,11 @@ public class SpringJPAConfig {
 		transactionManager.setEntityManagerFactory(emf);
 		
 		return transactionManager;
+	}
+	
+	@Bean
+	@Autowired
+	public EntityManager entityManager(EntityManagerFactory emf) {
+		 return emf.createEntityManager();
 	}
 }

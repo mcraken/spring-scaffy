@@ -1,5 +1,7 @@
 package com.scaffy.entity.security;
 
+import java.io.Serializable;
+
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,19 +11,17 @@ import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * <p>Role class.</p>
- *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
- * A lookup table for all defined system roles.
- * @version $Id: $Id
  */
 @Entity
-@Table(name = "PAS_ROLE")
+@Table(name = "USER_ROLE")
 @Cacheable(true)
-public class Role {
+public class UserRole implements Serializable{
 
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@Column(name = "role_name")
 	private String name;
@@ -29,7 +29,7 @@ public class Role {
 	/**
 	 * <p>Constructor for Role.</p>
 	 */
-	public Role() {
+	public UserRole() {
 	}
 	
 	/**

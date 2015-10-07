@@ -19,28 +19,29 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 @Entity
-@Table(name = "PAS_User")
+@Table(name = "USER_ACCOUNT")
 @Cacheable(true)
-public class ScaffyUser {
+public class UserAccount {
 	@Id
+	@Column(name = "USERNAME")
 	private String username;
 	
-	@Column
+	@Column(name = "PASSWORD")
 	private String password;
 	
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "pas_user_role", joinColumns = {
+	@JoinTable(name = "user_account_role", joinColumns = {
 				@JoinColumn(name = "username")
 			}, inverseJoinColumns = {
 				@JoinColumn(name = "role_name")	
 			})
 	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-	private List<Role> roles;
+	private List<UserRole> roles;
 	
 	/**
 	 * <p>Constructor for PASUser.</p>
 	 */
-	public ScaffyUser() {
+	public UserAccount() {
 		
 	}
 
@@ -50,7 +51,7 @@ public class ScaffyUser {
 	 * @param username a {@link java.lang.String} object.
 	 * @param password a {@link java.lang.String} object.
 	 */
-	public ScaffyUser(String username, String password) {
+	public UserAccount(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
@@ -78,7 +79,7 @@ public class ScaffyUser {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<Role> getRoles() {
+	public List<UserRole> getRoles() {
 		return roles;
 	}
 	
@@ -98,7 +99,7 @@ public class ScaffyUser {
 		
 		ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 		
-		for(Role role : roles)
+		for(UserRole role : roles)
 			grantedAuthorities.add(role.createAuthority());
 		
 		return grantedAuthorities;

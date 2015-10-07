@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -30,6 +29,7 @@ import com.scaffy.query.key.RestSearchKey;
 
 public class BasicRestService implements RestService{
 	
+	@Autowired
 	private EntityManager entityManager;
 	
 	@Autowired
@@ -42,12 +42,6 @@ public class BasicRestService implements RestService{
 	
 	public void setModelClass(String modelName) throws ClassNotFoundException {
 		this.modelClass = Class.forName(modelName);
-	}
-	
-	@PostConstruct
-	public void init() {
-		
-		entityManager = emf.createEntityManager();
 	}
 	
 	private <T> List<T> read(RestSearchKey key, Class<T> typeClass) throws InvalidCriteriaException {

@@ -28,7 +28,7 @@
 		<mysql.driver.version>5.1.35</mysql.driver.version>
 
 		<!-- Hibernate / JPA -->
-		<hibernate.version>4.2.1.Final</hibernate.version>
+		<hibernate.version>4.3.7.Final</hibernate.version>
 
 		<!-- Logging -->
 		<logback.version>1.0.13</logback.version>
@@ -191,7 +191,11 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.2.1.Final</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
