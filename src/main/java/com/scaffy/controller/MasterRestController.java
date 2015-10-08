@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.scaffy.query.exception.InvalidCriteriaException;
 import com.scaffy.query.exception.InvalidCriteriaSyntaxException;
@@ -29,8 +28,6 @@ import com.scaffy.query.key.RestSearchKey;
 import com.scaffy.service.NoDataFoundException;
 import com.scaffy.service.RestService;
 
-@RestController
-@RequestMapping("/app/api/")
 public class MasterRestController {
 
 	@Autowired
