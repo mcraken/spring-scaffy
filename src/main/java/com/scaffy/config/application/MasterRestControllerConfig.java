@@ -6,12 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.scaffy.controller.MasterRestController;
 import com.scaffy.controller.RESTErrorHandler;
-import com.scaffy.service.RestDAO;
 import com.scaffy.weave.ClassAnnotationWeavelet;
 import com.scaffy.weave.ControllerAdviceBuilder;
 import com.scaffy.weave.RequestMappingBuilder;
@@ -57,9 +55,4 @@ public class MasterRestControllerConfig extends BeanRegistrarConfig{
 
 	}
 	
-	@Bean
-	public RestDAO restDAO() {
-		return new RestDAO();
-	}
-
 }

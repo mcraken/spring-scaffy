@@ -1,5 +1,6 @@
 package com.scaffy.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.scaffy.service.NoDataFoundException;
 import com.scaffy.service.RestService;
@@ -66,6 +68,29 @@ public class MasterRestController {
 		Object model = restService.bindAndValidate(body);
 		
 		restService.save(model);
+
+		ResponseEntity<SuccessResponse> responseEntity = 
+				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.CREATED);
+
+		return responseEntity;
+	}
+	
+	@RequestMapping(value = "/multi/{modelName}", method = RequestMethod.POST, 
+			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public ResponseEntity<SuccessResponse> multipost(
+			@RequestBody String body,
+			@PathVariable("modelName") String modelName,
+			MultipartHttpServletRequest request
+			) throws BindException, NoDataFoundException, BeanTraversalException, IOException {
+
+		RestService restService = findRestService(modelName);
+		
+		Object model = restService.bindAndValidate(body);
+		
+		MultipartRequest multipartRequest = new MultipartRequest(model, request);
+		
+		restService.saveWithAttachments(multipartRequest);
 
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.CREATED);

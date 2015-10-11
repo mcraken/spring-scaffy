@@ -14,9 +14,16 @@ import com.scaffy.query.jpa.criteriahandlers.LessThanCriterionHandler;
 import com.scaffy.query.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
 import com.scaffy.query.jpa.criteriahandlers.LikeCriteriaHandler;
 import com.scaffy.query.jpa.criteriahandlers.LogicalCriteriaHandler;
+import com.scaffy.service.EntityService;
+import com.scaffy.service.JPAEntityService;
 
 @Configuration
-public class JPACriteriaHandlersConfig {
+public class ScaffyJPAConfig {
+	
+	@Bean
+	public EntityService entityService() {
+		return new JPAEntityService();
+	}
 	
 	@Bean
 	public Map<String, CriteriaHandler> criteriaHandlers(){

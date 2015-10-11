@@ -9,9 +9,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.Validator;
 
+import com.scaffy.controller.MultipartRequest;
 import com.scaffy.service.bean.BeanTraversalException;
 
-public class BasicRestService implements RestService{
+public class BasicRestService implements RestService {
 
 	private Class<?> modelClass;
 
@@ -22,7 +23,10 @@ public class BasicRestService implements RestService{
 	private Validator validator;
 
 	@Autowired
-	private RestDAO restDAO;
+	private EntityService entityService;
+	
+	@Autowired(required = false)
+	private AttachmentService attachmentService;
 
 	public void setModelClass(String modelName) throws ClassNotFoundException {
 		this.modelClass = Class.forName(modelName);
@@ -43,26 +47,30 @@ public class BasicRestService implements RestService{
 		return model;
 	}
 
-	public Object save(Object model) throws BeanTraversalException {
+	public void save(Object model) throws BeanTraversalException {
 
-		restDAO.create(model);
+		entityService.create(model);
 		
-		return model;
-
+	}
+	
+	public void saveWithAttachments(MultipartRequest request) throws BeanTraversalException {
+		
+		entityService.create(request.getModel());
+		
+		attachmentService.createAttachments(request.getAttachments());
+		
 	}
 
-	public Object update(Object model) throws BeanTraversalException {
+	public void update(Object model) throws BeanTraversalException {
 
-		restDAO.update(model);
+		entityService.update(model);
 		
-		return model;
 	}
 
-	public Object delete(Object model) throws BeanTraversalException {
+	public void delete(Object model) throws BeanTraversalException {
 
-		restDAO.delete(model);
+		entityService.delete(model);
 
-		return model;
 	}
 
 }
