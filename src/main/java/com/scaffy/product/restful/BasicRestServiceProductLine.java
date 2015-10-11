@@ -10,7 +10,6 @@ import com.scaffy.product.ProductLine;
 import com.scaffy.service.BasicRestService;
 import com.scaffy.weave.AnnotationWeavelet;
 import com.scaffy.weave.CacheEvictBuilder;
-import com.scaffy.weave.CacheableBuilder;
 import com.scaffy.weave.MethodAnnotationWeavelet;
 import com.scaffy.weave.PreAuthorizeBuilder;
 import com.scaffy.weave.TransactionalBuilder;
@@ -24,16 +23,7 @@ public class BasicRestServiceProductLine implements ProductFactoryLine {
 		
 		RestModel restModelAnnotation = (RestModel) targetAnnotation;
 		
-		MethodAnnotationWeavelet queryWeavelet = 
-				new MethodAnnotationWeavelet(
-						"query", 							
-						new PreAuthorizeBuilder(restModelAnnotation.authorization()),
-						new CacheableBuilder(restModelAnnotation.cacheName())
-						);
-		
-		
 		return new AnnotationWeavelet[]{
-				queryWeavelet,
 				new MethodAnnotationWeavelet(
 						"save", 							
 						new PreAuthorizeBuilder(restModelAnnotation.authorization()),

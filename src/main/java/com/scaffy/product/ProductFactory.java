@@ -64,7 +64,7 @@ public class ProductFactory {
 			for(String targetPackage : targetPackages)
 				packages += targetPackage + " ";
 			
-			throw new NoBeansFoundException(packages);
+			logger.error("Runtime beans unavailable", new NoBeansFoundException(packages));
 		}
 		
 		return allBeans;
@@ -143,6 +143,7 @@ public class ProductFactory {
 				
 				runtimeBeans = getBeanDefinitionsByAnnotation(productLineAnnotation.runtimeAnnotationClass(), runtimePackages);
 				
+				if(runtimeBeans != null)
 				for(BeanDefinition runtimeBean : runtimeBeans){
 					
 					registerProduct(
