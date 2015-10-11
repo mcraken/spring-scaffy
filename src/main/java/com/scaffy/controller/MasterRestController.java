@@ -9,11 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,56 +23,34 @@ public class MasterRestController {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	
-	@Autowired
-	private GsonHttpMessageConverter httpMessageConverter;
 
-	@Autowired
-	private Validator validator;
-	
 	private HashMap<String, RestService> restServices;
-	
+
 	private RestService findRestService(String resourceName) throws NoDataFoundException {
-		
+
 		RestService restService = restServices.get(resourceName);
-		
+
 		if(restService == null)
 			throw new NoDataFoundException("Could not find resource " + resourceName);
-		
+
 		return restService;
 	}
-	
-	private <T>T bindAndValidate(String modelName, String jsonBody, Class<T> modelClass)
-			throws BindException {
-		
-		T model = httpMessageConverter.getGson().fromJson(jsonBody, modelClass);
-		
-		BindingResult bindingResult = new MapBindingResult(new HashMap<String, Object>(), modelName); 
-		
-		validator.validate(model, bindingResult);
-		
-		if(bindingResult.hasErrors())
-			throw new BindException(bindingResult);
-		
-		return model;
-	}
-	
+
 	@PostConstruct
 	public void init() {
-		
+
 		Map<String, RestService> definedServices = applicationContext.getBeansOfType(RestService.class);
-		
+
 		restServices = new HashMap<String, RestService>();
-		
+
 		for(String ser : definedServices.keySet().toArray(new String[]{})){
 			restServices.put(
 					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
 					definedServices.get(ser)
 					);
 		}
-			
+
 	}
-	
 
 	@RequestMapping(value = "/{modelName}", method = RequestMethod.POST, 
 			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
@@ -85,16 +59,14 @@ public class MasterRestController {
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
 			) throws BindException, NoDataFoundException {
-		
+
 		RestService restService = findRestService(modelName);
-		
-		Object model = bindAndValidate(modelName, body, restService.getModelClass());
-		
-		restService.save(model);
-		
+
+		Object model= restService.save(body);
+
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.CREATED);
-		
+
 		return responseEntity;
 	}
 
@@ -104,34 +76,30 @@ public class MasterRestController {
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
 			) throws BindException, NoDataFoundException {
-		
+
 		RestService restService = findRestService(modelName);
-		
-		Object model = bindAndValidate(modelName, body, restService.getModelClass());
-		
-		restService.update(model);
-		
+
+		Object model = restService.update(body);
+
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.OK);
-		
+
 		return responseEntity;
 	}
-	
+
 	@RequestMapping(value = "/{modelName}", method = RequestMethod.DELETE, produces = "application/json;charset=utf-8")
 	public @ResponseBody ResponseEntity<SuccessResponse> delete(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
 			) throws BindException, NoDataFoundException {
-		
+
 		RestService restService = findRestService(modelName);
-		
-		Object model = bindAndValidate(modelName, body, restService.getModelClass());
-		
-		restService.delete(model);
-		
+
+		Object model = restService.delete(body);
+
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.OK);
-		
+
 		return responseEntity;
 	}
 

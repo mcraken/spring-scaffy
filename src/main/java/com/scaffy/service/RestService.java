@@ -1,13 +1,13 @@
 package com.scaffy.service;
 
+import org.springframework.validation.BindException;
+
 
 public interface RestService {
 	
-	public <T> void save(T model);
+	public Object save(String body) throws BindException;
 	
-	public <T> void update(T model);
+	public Object update(String body) throws BindException;
 	
-	public <T> void delete(T model);
-	
-	public Class<?> getModelClass();
+	public Object delete(String body) throws BindException;
 }

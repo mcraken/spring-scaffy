@@ -1,30 +1,52 @@
 package com.scaffy.service;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.MapBindingResult;
+import org.springframework.validation.Validator;
 
 public class BasicRestService implements RestService{
 	
 	@Autowired
 	private EntityManager entityManager;
 	
-	@Value("#{criteriaHandlers}")
-	private Map<String, CriteriaHandler> criteriaHandlers;
-	
 	private Class<?> modelClass;
+	
+	@Autowired
+	private GsonHttpMessageConverter httpMessageConverter;
+
+	@Autowired
+	private Validator validator;
 	
 	public void setModelClass(String modelName) throws ClassNotFoundException {
 		this.modelClass = Class.forName(modelName);
 	}
 	
-	public <T> void save(T model) {
+	private Object bindAndValidate(String jsonBody)
+			throws BindException {
+
+		Object model = httpMessageConverter.getGson().fromJson(jsonBody, modelClass);
+
+		BindingResult bindingResult = new MapBindingResult(new HashMap<String, Object>(), modelClass.getSimpleName()); 
+
+		validator.validate(model, bindingResult);
+
+		if(bindingResult.hasErrors())
+			throw new BindException(bindingResult);
+
+		return model;
+	}
+	
+	public Object save(String body) throws BindException {
+		
+		Object model = bindAndValidate(body);
 		
 		EntityTransaction t = entityManager.getTransaction();
 		
@@ -34,9 +56,13 @@ public class BasicRestService implements RestService{
 		
 		t.commit();
 		
+		return model;
+		
 	}
 	
-	public <T> void update(T model) {
+	public Object update(String body) throws BindException {
+		
+		Object model = bindAndValidate(body);
 		
 		EntityTransaction t = entityManager.getTransaction();
 		
@@ -45,9 +71,13 @@ public class BasicRestService implements RestService{
 		entityManager.merge(model);
 		
 		t.commit();
+		
+		return model;
 	}
 	
-	public <T> void delete(T model) {
+	public Object delete(String body) throws BindException {
+		
+		Object model = bindAndValidate(body);
 		
 		EntityTransaction t = entityManager.getTransaction();
 		
@@ -56,9 +86,8 @@ public class BasicRestService implements RestService{
 		entityManager.remove(model);
 		
 		t.commit();
+		
+		return model;
 	}
 
-	public Class<?> getModelClass() {
-		return modelClass;
-	}
 }

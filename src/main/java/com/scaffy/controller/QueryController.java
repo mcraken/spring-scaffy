@@ -42,19 +42,19 @@ public class QueryController {
 		return queryService;
 	}
 	
-	private <T>T bindAndValidate(String modelName, String jsonBody, Class<T> modelClass)
+	private RestSearchKey bindAndValidate(String jsonBody)
 			throws BindException {
 		
-		T model = httpMessageConverter.getGson().fromJson(jsonBody, modelClass);
+		RestSearchKey key = httpMessageConverter.getGson().fromJson(jsonBody, RestSearchKey.class);
 		
-		BindingResult bindingResult = new MapBindingResult(new HashMap<String, Object>(), modelName); 
+		BindingResult bindingResult = new MapBindingResult(new HashMap<String, Object>(), "Search-Key"); 
 		
-		validator.validate(model, bindingResult);
+		validator.validate(key, bindingResult);
 		
 		if(bindingResult.hasErrors())
 			throw new BindException(bindingResult);
 		
-		return model;
+		return key;
 	}
 	
 	@RequestMapping(value = "/query", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
@@ -62,7 +62,7 @@ public class QueryController {
 			@RequestHeader("Search-Key") String searchKey
 			) throws InvalidCriteriaException, InvalidCriteriaSyntaxException, NoDataFoundException, BindException {
 		
-		RestSearchKey restSearchKey = bindAndValidate("Search-Key", searchKey, RestSearchKey.class);
+		RestSearchKey restSearchKey = bindAndValidate(searchKey);
 		
 		restSearchKey.parseAllCriterias();
 		

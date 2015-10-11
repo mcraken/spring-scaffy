@@ -25,7 +25,7 @@ import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
 import com.scaffy.query.key.RestCriteria;
 import com.scaffy.query.key.RestSearchKey;
 
-public class BasicQueryService {
+public class BasicQueryService implements QueryService{
 	
 	@Autowired
 	private EntityManager entityManager;
