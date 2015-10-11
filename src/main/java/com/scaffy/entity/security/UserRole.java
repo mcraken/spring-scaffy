@@ -32,6 +32,11 @@ public class UserRole implements Serializable{
 	public UserRole() {
 	}
 	
+	public UserRole(String name) {
+		this.name = name;
+	}
+
+
 	/**
 	 * <p>Getter for the field <code>name</code>.</p>
 	 *

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scaffy.service.NoDataFoundException;
 import com.scaffy.service.RestService;
+import com.scaffy.service.bean.BeanTraversalException;
 
 public class MasterRestController {
 
@@ -58,11 +59,13 @@ public class MasterRestController {
 	public ResponseEntity<SuccessResponse> post(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, NoDataFoundException {
+			) throws BindException, NoDataFoundException, BeanTraversalException {
 
 		RestService restService = findRestService(modelName);
-
-		Object model= restService.save(body);
+		
+		Object model = restService.bindAndValidate(body);
+		
+		restService.save(model);
 
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.CREATED);
@@ -75,11 +78,13 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> put(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, NoDataFoundException {
+			) throws BindException, NoDataFoundException, BeanTraversalException {
 
 		RestService restService = findRestService(modelName);
 
-		Object model = restService.update(body);
+		Object model = restService.bindAndValidate(body);
+		
+		restService.update(model);
 
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.OK);
@@ -91,11 +96,13 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> delete(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, NoDataFoundException {
+			) throws BindException, NoDataFoundException, BeanTraversalException {
 
 		RestService restService = findRestService(modelName);
 
-		Object model = restService.delete(body);
+		Object model = restService.bindAndValidate(body);
+		
+		restService.delete(model);
 
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.OK);
