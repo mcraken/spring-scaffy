@@ -2,6 +2,7 @@ package com.scaffy.product.restful;
 
 import java.lang.annotation.Annotation;
 
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
 import com.scaffy.product.ProductFactoryLine;
@@ -23,7 +24,7 @@ public class BasicSearchServiceProductLine implements ProductFactoryLine {
 		
 		return new AnnotationWeavelet[]{
 				new MethodAnnotationWeavelet(
-						"search", 							
+						"acquire", 							
 						new PreAuthorizeBuilder(queryableAnnotation.authorization()),
 						new CacheableBuilder(queryableAnnotation.cacheName())
 						)
@@ -33,6 +34,11 @@ public class BasicSearchServiceProductLine implements ProductFactoryLine {
 
 	public void beforeRegistration(RootBeanDefinition productBean, RootBeanDefinition sourceBean) {
 		
+		MutablePropertyValues propertyValues = new MutablePropertyValues();
+		
+		propertyValues.add("modelClass", sourceBean.getBeanClassName());
+
+		productBean.setPropertyValues(propertyValues);
 	}
 
 }

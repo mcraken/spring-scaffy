@@ -34,22 +34,22 @@ public class HibernateSearchDao implements SearchDao {
 
 	public <T> List<T> read(RestSearchKey key, Class<T> typeClass)
 			throws InvalidCriteriaException {
-		
+
 		FullTextEntityManager fullTextEntityManager = applicationContext.getBean(FullTextEntityManager.class);
-		
+
 		try{
-			
+
 			fullTextEntityManager.getTransaction().begin();
-			
+
 			QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
 					.buildQueryBuilder().forEntity(typeClass).get();
 
 			Map<String, Query> crtsMap = buildCriteriaMap(key, queryBuilder);
-			
+
 			return executeSearchQuery(key, typeClass, fullTextEntityManager, queryBuilder, crtsMap);
 
 		} finally {
-			
+
 			fullTextEntityManager.getTransaction().commit();
 		}
 
@@ -141,16 +141,8 @@ public class HibernateSearchDao implements SearchDao {
 			Map<String, Query> crtsMap
 			) {
 
-		Query[] queries = crtsMap.values().toArray(new Query[]{});
-
-		BooleanJunction<?> booleanJunction = queryBuilder.bool();
-
-		for(Query query : queries)
-			booleanJunction = booleanJunction.must(query);
-
-		FullTextQuery fullTextQuery =
-				fullTextEntityManager.createFullTextQuery(
-						booleanJunction.createQuery(), typeClass);
+		FullTextQuery fullTextQuery = createFullTextQuery(typeClass,
+				fullTextEntityManager, queryBuilder, crtsMap);
 
 		if(key.hasOrders()){
 
@@ -161,6 +153,48 @@ public class HibernateSearchDao implements SearchDao {
 
 		return fullTextQuery.getResultList(); 
 
+	}
+
+	private <T> FullTextQuery createFullTextQuery(Class<T> typeClass,
+			FullTextEntityManager fullTextEntityManager,
+			QueryBuilder queryBuilder, Map<String, Query> crtsMap) {
+		BooleanJunction<?> booleanJunction = createFinalBooleanJunction(
+				queryBuilder, crtsMap);
+
+		FullTextQuery fullTextQuery = null;
+
+		if(booleanJunction == null){
+			fullTextQuery =
+			fullTextEntityManager.createFullTextQuery(
+					queryBuilder.all().createQuery(), typeClass);
+		} else {
+			
+			fullTextQuery =
+			fullTextEntityManager.createFullTextQuery(
+					booleanJunction.createQuery(), typeClass);
+		}
+		return fullTextQuery;
+	}
+
+	private BooleanJunction<?> createFinalBooleanJunction(
+			QueryBuilder queryBuilder, Map<String, Query> crtsMap) {
+
+		Query[] queries = null;
+
+		if(crtsMap != null)
+			queries = crtsMap.values().toArray(new Query[]{});
+
+		BooleanJunction<?> booleanJunction = null;
+
+		if(queries != null){
+
+			booleanJunction = queryBuilder.bool();
+
+			for(Query query : queries)
+				booleanJunction = booleanJunction.must(query);
+		}
+
+		return booleanJunction;
 	}
 
 }

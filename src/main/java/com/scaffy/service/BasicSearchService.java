@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.scaffy.acquisition.exception.InvalidCriteriaException;
 import com.scaffy.acquisition.key.RestSearchKey;
-import com.scaffy.dao.QueryDao;
+import com.scaffy.dao.SearchDao;
 
 public class BasicSearchService implements SearchService {
 
 	private Class<?> modelClass;
 
 	@Autowired
-	private QueryDao queryDao;
+	private SearchDao searchDao;
 
 	public void setModelClass(String modelName) throws ClassNotFoundException {
 		this.modelClass = Class.forName(modelName);
@@ -22,7 +22,7 @@ public class BasicSearchService implements SearchService {
 	public List<?> acquire(RestSearchKey restSearchKey)
 			throws InvalidCriteriaException, NoDataFoundException {
 		
-		List<?> result = queryDao.read(restSearchKey, modelClass); 
+		List<?> result = searchDao.read(restSearchKey, modelClass); 
 
 		if(result == null || result.size() == 0)
 			throw new NoDataFoundException("Nothing matches your key");

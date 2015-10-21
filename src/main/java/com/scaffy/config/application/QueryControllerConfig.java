@@ -35,6 +35,7 @@ public class QueryControllerConfig extends BeanRegistrarConfig{
 							),
 							registry
 					);
+			
 
 		} catch (Exception e) {
 
