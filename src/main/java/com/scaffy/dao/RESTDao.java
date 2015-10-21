@@ -1,8 +1,8 @@
-package com.scaffy.service;
+package com.scaffy.dao;
 
 import com.scaffy.service.bean.BeanTraversalException;
 
-public interface EntityService {
+public interface RESTDao {
 
 	public void create(Object model) throws BeanTraversalException;
 

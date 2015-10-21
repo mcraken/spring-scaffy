@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -15,18 +13,14 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scaffy.acquisition.exception.InvalidCriteriaException;
 import com.scaffy.acquisition.exception.InvalidCriteriaSyntaxException;
 import com.scaffy.acquisition.key.RestSearchKey;
+import com.scaffy.service.AcquisitionService;
 import com.scaffy.service.NoDataFoundException;
-import com.scaffy.service.QueryService;
 
-public class AcquisitionController {
+public abstract class AcquisitionController {
 	
 	@Autowired
 	private GsonHttpMessageConverter httpMessageConverter;
@@ -34,22 +28,36 @@ public class AcquisitionController {
 	@Autowired
 	private Validator validator;
 	
-	private HashMap<String, QueryService> queryServices;
-	
 	@Autowired
 	private ApplicationContext applicationContext;
 	
-	private QueryService findQueryService(String resourceName) throws NoDataFoundException {
+	protected <T extends AcquisitionService> AcquisitionService findAcquisitionService(String resourceName, Map<String, T> services) throws NoDataFoundException {
 		
-		QueryService queryService = queryServices.get(resourceName);
+		T service = services.get(resourceName);
 		
-		if(queryService == null)
+		if(service == null)
 			throw new NoDataFoundException("Could not find resource " + resourceName);
 		
-		return queryService;
+		return service;
 	}
 	
-	private RestSearchKey bindAndValidate(String jsonBody)
+	protected <T> Map<String, T> buildServicesMap(Class<T> acquisitionType) {
+		
+		Map<String, T> definedServices = applicationContext.getBeansOfType(acquisitionType);
+
+		Map<String, T> services = new HashMap<String, T>();
+
+		for(String ser : definedServices.keySet().toArray(new String[]{})){
+			services.put(
+					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
+					definedServices.get(ser)
+					);
+		}
+		
+		return services;
+	}
+	
+	protected RestSearchKey bindAndValidate(String jsonBody)
 			throws BindException {
 		
 		RestSearchKey key = httpMessageConverter.getGson().fromJson(jsonBody, RestSearchKey.class);
@@ -64,26 +72,10 @@ public class AcquisitionController {
 		return key;
 	}
 	
-	@PostConstruct
-	public void init() {
-
-		Map<String, QueryService> definedServices = applicationContext.getBeansOfType(QueryService.class);
-
-		queryServices = new HashMap<String, QueryService>();
-
-		for(String ser : definedServices.keySet().toArray(new String[]{})){
-			queryServices.put(
-					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
-					definedServices.get(ser)
-					);
-		}
-
-	}
-	
-	@RequestMapping(value = "/query", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public @ResponseBody ResponseEntity<SuccessResponse> query(
-			@RequestHeader("Search-Key") String searchKey
-			) throws InvalidCriteriaException, InvalidCriteriaSyntaxException, NoDataFoundException, BindException {
+	protected <T extends AcquisitionService>ResponseEntity<SuccessResponse> executeAcquireRequest(
+			String searchKey, Map<String, T> services) throws BindException,
+			InvalidCriteriaSyntaxException, NoDataFoundException,
+			InvalidCriteriaException {
 		
 		RestSearchKey restSearchKey = bindAndValidate(searchKey);
 		
@@ -91,10 +83,11 @@ public class AcquisitionController {
 		
 		String resourceName = restSearchKey.getResourceName();
 		
-		QueryService queyService = findQueryService(resourceName);
+		AcquisitionService queyService = findAcquisitionService(resourceName, services);
 		
-		List<?> result = queyService.query(restSearchKey);
+		List<?> result = queyService.acquire(restSearchKey);
 		
 		return new ResponseEntity<SuccessResponse>(new SuccessResponse(result), HttpStatus.OK);
 	}
+
 }

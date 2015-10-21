@@ -1,4 +1,4 @@
-package com.scaffy.service;
+package com.scaffy.dao;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,9 +25,9 @@ import com.scaffy.acquisition.jpa.criteriahandlers.CriteriaHandler;
 import com.scaffy.acquisition.key.RestCriteria;
 import com.scaffy.acquisition.key.RestSearchKey;
 
-public class JPAQueryService extends BasicQueryService {
+public class JPAQueryDao implements QueryDao {
 
-	@Value("#{criteriaHandlers}")
+	@Value("#{jpaCriteriaHandlers}")
 	private Map<String, CriteriaHandler> criteriaHandlers;
 
 	@Autowired
@@ -133,8 +133,7 @@ public class JPAQueryService extends BasicQueryService {
 		handler.handle(crt, crtsMap, root, criteriaBuilder);
 	}
 	
-	@Override
-	protected <T> List<T> read(RestSearchKey key, Class<T> typeClass)
+	public <T> List<T> read(RestSearchKey key, Class<T> typeClass)
 			throws InvalidCriteriaException {
 		
 		EntityTransaction t = entityManager.getTransaction();

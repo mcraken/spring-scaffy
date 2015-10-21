@@ -10,6 +10,7 @@ import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.Validator;
 
 import com.scaffy.controller.MultipartRequest;
+import com.scaffy.dao.RESTDao;
 import com.scaffy.service.bean.BeanTraversalException;
 
 public class BasicRestService implements RestService {
@@ -23,7 +24,7 @@ public class BasicRestService implements RestService {
 	private Validator validator;
 
 	@Autowired
-	private EntityService entityService;
+	private RESTDao restDao;
 	
 	@Autowired(required = false)
 	private AttachmentService attachmentService;
@@ -49,13 +50,13 @@ public class BasicRestService implements RestService {
 
 	public void save(Object model) throws BeanTraversalException {
 
-		entityService.create(model);
+		restDao.create(model);
 		
 	}
 	
 	public void saveWithAttachments(MultipartRequest request) throws BeanTraversalException {
 		
-		entityService.create(request.getModel());
+		restDao.create(request.getModel());
 		
 		attachmentService.createAttachments(request.getAttachments());
 		
@@ -63,13 +64,13 @@ public class BasicRestService implements RestService {
 
 	public void update(Object model) throws BeanTraversalException {
 
-		entityService.update(model);
+		restDao.update(model);
 		
 	}
 
 	public void delete(Object model) throws BeanTraversalException {
 
-		entityService.delete(model);
+		restDao.delete(model);
 
 	}
 

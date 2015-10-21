@@ -15,9 +15,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class HibernateSearchJPAConfig {
+public class HibernateSearchConfig {
 
-	private static Logger logger = LoggerFactory.getLogger(HibernateSearchJPAConfig.class);
+	private static Logger logger = LoggerFactory.getLogger(HibernateSearchConfig.class);
 
 	@Value("${database.reindex}")
 	private boolean reindexDatabase;

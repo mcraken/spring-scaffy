@@ -14,19 +14,27 @@ import com.scaffy.acquisition.jpa.criteriahandlers.LessThanCriterionHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LikeCriteriaHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LogicalCriteriaHandler;
-import com.scaffy.service.EntityService;
-import com.scaffy.service.JPAEntityService;
+import com.scaffy.dao.JPAQueryDao;
+import com.scaffy.dao.JPARESTDao;
+import com.scaffy.dao.QueryDao;
+import com.scaffy.dao.RESTDao;
 
 @Configuration
 public class ScaffyJPAConfig {
 	
 	@Bean
-	public EntityService entityService() {
-		return new JPAEntityService();
+	public RESTDao restDao() {
+		return new JPARESTDao();
 	}
 	
 	@Bean
-	public Map<String, CriteriaHandler> criteriaHandlers(){
+	public QueryDao queryDao() {
+		
+		return new JPAQueryDao();
+	}
+	
+	@Bean
+	public Map<String, CriteriaHandler> jpaCriteriaHandlers(){
 
 		HashMap<String, CriteriaHandler> criteriaHandlers = new HashMap<String, CriteriaHandler>();
 

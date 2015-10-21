@@ -1,4 +1,4 @@
-package com.scaffy.service;
+package com.scaffy.dao;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -10,7 +10,7 @@ import com.scaffy.service.bean.BeanTraversal;
 import com.scaffy.service.bean.BeanTraversalException;
 import com.scaffy.service.bean.BeanVisitor;
 
-public class JPAEntityService implements EntityService {
+public class JPARESTDao implements RESTDao {
 	
 	private BeanTraversal beanTraversal;
 	
