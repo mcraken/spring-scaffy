@@ -2,15 +2,10 @@ package com.scaffy.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.scaffy.acquisition.exception.InvalidCriteriaException;
+import com.scaffy.acquisition.key.RestSearchKey;
 
-import com.scaffy.query.exception.InvalidCriteriaException;
-import com.scaffy.query.key.RestSearchKey;
-
-public class BasicQueryService implements QueryService {
-	
-	@Autowired
-	private EntityService entityService;
+public abstract class BasicQueryService implements QueryService {
 	
 	private Class<?> modelClass;
 	
@@ -24,12 +19,14 @@ public class BasicQueryService implements QueryService {
 						NoDataFoundException
 	{
 		
-		List<?> result = entityService.read(restSearchKey, modelClass); 
+		List<?> result = read(restSearchKey, modelClass); 
 		
 		if(result == null || result.size() == 0)
 			throw new NoDataFoundException("Nothing matches your key");
 		
 		return result; 
 	}
+	
+	protected abstract <T> List<T> read(RestSearchKey key, Class<T> typeClass) throws InvalidCriteriaException;
 	
 }

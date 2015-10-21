@@ -1,4 +1,4 @@
-package com.scaffy.query.jpa.criteriahandlers;
+package com.scaffy.acquisition.jpa.criteriahandlers;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -8,10 +8,10 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.scaffy.query.exception.BadCriteriaValueException;
-import com.scaffy.query.key.RestCriteria;
+import com.scaffy.acquisition.exception.BadCriteriaValueException;
+import com.scaffy.acquisition.key.RestCriteria;
 
-public class LessThanCriterionHandler implements CriteriaHandler{
+public class GreaterThanOrEqualCriterionHandler implements CriteriaHandler{
 
 	public <T> void handle(RestCriteria restCriteria,
 			Map<String, Predicate> criteria, Root<T> root,
@@ -19,7 +19,7 @@ public class LessThanCriterionHandler implements CriteriaHandler{
 		
 		Path<BigDecimal> path =  root.get(restCriteria.readCriteriaName());
 		
-		Predicate predicate = criteriaBuilder.lt(path, restCriteria.getDecimalValue());
+		Predicate predicate = criteriaBuilder.ge(path, restCriteria.getDecimalValue());
 		
 		criteria.put(restCriteria.readCriteriaId(), predicate);
 	}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.scaffy.query.exception;
+package com.scaffy.acquisition.exception;
 
 /**
  * @author Raken

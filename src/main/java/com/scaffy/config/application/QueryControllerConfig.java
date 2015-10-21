@@ -8,7 +8,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.Configuration;
 
-import com.scaffy.controller.QueryController;
+import com.scaffy.controller.AcquisitionController;
 import com.scaffy.weave.ClassAnnotationWeavelet;
 import com.scaffy.weave.RequestMappingBuilder;
 import com.scaffy.weave.RestControllerBuilder;
@@ -27,8 +27,8 @@ public class QueryControllerConfig extends BeanRegistrarConfig{
 		try {
 
 			registerBean(
-					QueryController.class.getName(), 
-					QueryController.class.getName() + "_Bean", 
+					AcquisitionController.class.getName(), 
+					AcquisitionController.class.getName() + "_Bean", 
 					new ClassAnnotationWeavelet(
 							new RestControllerBuilder(),
 							new RequestMappingBuilder(getScaffyProperty("restful.query.uri"))

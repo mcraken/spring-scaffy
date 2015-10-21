@@ -1,4 +1,4 @@
-package com.scaffy.query.exception;
+package com.scaffy.acquisition.exception;
 
 public class CriteriaIDNotFoundException extends Exception{
 

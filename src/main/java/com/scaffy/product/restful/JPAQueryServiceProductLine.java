@@ -6,7 +6,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 
 import com.scaffy.product.ProductFactoryLine;
 import com.scaffy.product.ProductLine;
-import com.scaffy.service.BasicQueryService;
+import com.scaffy.service.JPAQueryService;
 import com.scaffy.weave.AnnotationWeavelet;
 import com.scaffy.weave.CacheableBuilder;
 import com.scaffy.weave.MethodAnnotationWeavelet;
@@ -14,8 +14,8 @@ import com.scaffy.weave.PreAuthorizeBuilder;
 
 @ProductLine(
 		runtimeAnnotationClass = Queryable.class,
-		productClass = BasicQueryService.class)
-public class BasicQueryServiceProductLine implements ProductFactoryLine {
+		productClass = JPAQueryService.class)
+public class JPAQueryServiceProductLine implements ProductFactoryLine {
 
 	public AnnotationWeavelet[] createWeavelets(Annotation targetAnnotation) {
 		

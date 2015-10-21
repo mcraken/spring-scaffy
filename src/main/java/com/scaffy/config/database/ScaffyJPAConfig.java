@@ -6,14 +6,14 @@ import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
-import com.scaffy.query.jpa.criteriahandlers.EqualCriteriaHandler;
-import com.scaffy.query.jpa.criteriahandlers.GreaterThanCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.GreaterThanOrEqualCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.LessThanCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.LikeCriteriaHandler;
-import com.scaffy.query.jpa.criteriahandlers.LogicalCriteriaHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.CriteriaHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.EqualCriteriaHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.GreaterThanCriterionHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.GreaterThanOrEqualCriterionHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.LessThanCriterionHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.LikeCriteriaHandler;
+import com.scaffy.acquisition.jpa.criteriahandlers.LogicalCriteriaHandler;
 import com.scaffy.service.EntityService;
 import com.scaffy.service.JPAEntityService;
 

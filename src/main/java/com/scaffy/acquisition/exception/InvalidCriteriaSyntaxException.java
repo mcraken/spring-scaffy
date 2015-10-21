@@ -1,7 +1,7 @@
 /**
  * @author Sherief Shawky(raken123@yahoo.com)
  */
-package com.scaffy.query.exception;
+package com.scaffy.acquisition.exception;
 
 /**
  * @author Sherief Shawky(raken123@yahoo.com)

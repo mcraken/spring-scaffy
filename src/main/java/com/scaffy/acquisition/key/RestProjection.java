@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.scaffy.query.key;
+package com.scaffy.acquisition.key;
 
 /**
  * @author Raken

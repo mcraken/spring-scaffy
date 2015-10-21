@@ -1,7 +1,7 @@
 /**
  * @author Sherief Shawky(raken123@yahoo.com)
  */
-package com.scaffy.query.key;
+package com.scaffy.acquisition.key;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.scaffy.query.exception.InvalidCriteriaSyntaxException;
+import com.scaffy.acquisition.exception.InvalidCriteriaSyntaxException;
 
 /**
  * @author Sherief Shawky(raken123@yahoo.com)

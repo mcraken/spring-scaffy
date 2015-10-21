@@ -1,4 +1,4 @@
-package com.scaffy.query.jpa.criteriahandlers;
+package com.scaffy.acquisition.jpa.criteriahandlers;
 
 import java.util.Map;
 
@@ -7,8 +7,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.scaffy.query.exception.BadCriteriaValueException;
-import com.scaffy.query.key.RestCriteria;
+import com.scaffy.acquisition.exception.BadCriteriaValueException;
+import com.scaffy.acquisition.key.RestCriteria;
 
 public class LikeCriteriaHandler implements CriteriaHandler {
 

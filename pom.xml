@@ -208,6 +208,11 @@
 			<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-search-orm</artifactId>
+			<version>4.5.3.Final</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
 			<version>1.0</version>
