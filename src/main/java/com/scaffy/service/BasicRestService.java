@@ -58,7 +58,7 @@ public class BasicRestService implements RestService {
 		
 		restDao.create(request.getModel());
 		
-		attachmentService.createAttachments(request.getAttachments());
+		attachmentService.createAttachments(request);
 		
 	}
 

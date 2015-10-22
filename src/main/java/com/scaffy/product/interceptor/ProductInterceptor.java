@@ -29,12 +29,12 @@ public class ProductInterceptor {
 	
 	public void before(JoinPoint joinPoint) {
 		
-		((BeforePointInterceptor)pointInterceptor).before(joinPoint.getArgs()[0]);
+		((BeforePointInterceptor) pointInterceptor).before(new ArgumentWrapper(joinPoint.getArgs()));
 	}
 	
 	public void after(JoinPoint joinPoint) {
 		
-		((AfterPointInterceptor)pointInterceptor).after(joinPoint.getArgs()[0]);
+		((AfterPointInterceptor) pointInterceptor).after(new ArgumentWrapper(joinPoint.getArgs()));
 	}
 	
 	public void around(ProceedingJoinPoint joinPoint) {

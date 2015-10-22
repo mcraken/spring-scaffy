@@ -3,9 +3,7 @@
  */
 package com.scaffy.service;
 
-import java.util.List;
-
-import com.scaffy.controller.MultipartRequest.Attachment;
+import com.scaffy.controller.MultipartRequest;
 
 /**
  * @author 	Sherief Shawky
@@ -13,5 +11,5 @@ import com.scaffy.controller.MultipartRequest.Attachment;
  */
 public interface AttachmentService {
 	
-	public void createAttachments(List<Attachment> attachments);
+	public void createAttachments(MultipartRequest request);
 }

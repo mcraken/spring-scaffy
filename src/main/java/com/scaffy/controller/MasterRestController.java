@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,7 +80,7 @@ public class MasterRestController {
 			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public ResponseEntity<SuccessResponse> multipost(
-			@RequestBody String body,
+			@ModelAttribute("model") String body,
 			@PathVariable("modelName") String modelName,
 			MultipartHttpServletRequest request
 			) throws BindException, NoDataFoundException, BeanTraversalException, IOException {

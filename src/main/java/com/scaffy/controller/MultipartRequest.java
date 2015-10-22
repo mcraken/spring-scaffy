@@ -72,8 +72,9 @@ public class MultipartRequest {
 		return attachments;
 	}
 	
-	public Object getModel() {
-		return model;
+	@SuppressWarnings("unchecked")
+	public <T>T getModel() {
+		return (T)model;
 	}
 	
 }
