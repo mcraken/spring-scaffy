@@ -47,6 +47,11 @@ public abstract class BeanRegistrarConfig implements BeanDefinitionRegistryPostP
 
 		Class<?> beanClass = annotationWeaver.weave();
 		
+		registerBean(beanClass, registry);
+	}
+
+	protected void registerBean(Class<?> beanClass, BeanDefinitionRegistry registry) {
+		
 		RootBeanDefinition bean = new RootBeanDefinition(beanClass, Autowire.BY_TYPE.value(), true);
 
 		registry.registerBeanDefinition(beanClass.getName(), bean);
