@@ -8,17 +8,17 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.Configuration;
 
-import com.scaffy.controller.QueryController;
+import com.scaffy.controller.AcquisitionController;
 import com.scaffy.weave.ClassAnnotationWeavelet;
 import com.scaffy.weave.RequestMappingBuilder;
 import com.scaffy.weave.RestControllerBuilder;
 
 @Configuration
-public class QueryControllerConfig extends BeanRegistrarConfig{
+public class AcquisitionControllerConfig extends BeanRegistrarConfig{
 
-	private static Logger logger = LoggerFactory.getLogger(QueryControllerConfig.class);
+	private static Logger logger = LoggerFactory.getLogger(AcquisitionControllerConfig.class);
 
-	public QueryControllerConfig() throws IOException {
+	public AcquisitionControllerConfig() throws IOException {
 	}
 
 	public void postProcessBeanDefinitionRegistry(
@@ -27,11 +27,11 @@ public class QueryControllerConfig extends BeanRegistrarConfig{
 		try {
 
 			registerBean(
-					QueryController.class.getName(), 
-					QueryController.class.getName() + "_Bean", 
+					AcquisitionController.class.getName(), 
+					AcquisitionController.class.getName() + "_Bean", 
 					new ClassAnnotationWeavelet(
 							new RestControllerBuilder(),
-							new RequestMappingBuilder(getScaffyProperty("restful.query.uri"))
+							new RequestMappingBuilder(getScaffyProperty("restful.acquisition.uri"))
 							),
 							registry
 					);

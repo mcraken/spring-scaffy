@@ -1,10 +1,6 @@
 package com.scaffy.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.scaffy.service.NoDataFoundException;
+import com.scaffy.service.ModelUnmarshaller;
 import com.scaffy.service.RestService;
+import com.scaffy.service.ServiceBroker;
+import com.scaffy.service.ServiceNotFoundException;
 import com.scaffy.service.bean.BeanTraversalException;
 
 public class MasterRestController {
@@ -28,45 +26,25 @@ public class MasterRestController {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private HashMap<String, RestService> restServices;
-
-	private RestService findRestService(String resourceName) throws NoDataFoundException {
-
-		RestService restService = restServices.get(resourceName);
-
-		if(restService == null)
-			throw new NoDataFoundException("Could not find resource " + resourceName);
-
-		return restService;
-	}
-
-	@PostConstruct
-	public void init() {
-
-		Map<String, RestService> definedServices = applicationContext.getBeansOfType(RestService.class);
-
-		restServices = new HashMap<String, RestService>();
-
-		for(String ser : definedServices.keySet().toArray(new String[]{})){
-			restServices.put(
-					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
-					definedServices.get(ser)
-					);
-		}
-
-	}
-
+	@Autowired
+	private ModelUnmarshaller modelUnmarshaller;
+	
+	@Autowired
+	private ServiceBroker serviceBroker;
+	
 	@RequestMapping(value = "/{modelName}", method = RequestMethod.POST, 
 			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public ResponseEntity<SuccessResponse> post(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, NoDataFoundException, BeanTraversalException {
+			) throws BindException, BeanTraversalException, ServiceNotFoundException {
 
-		RestService restService = findRestService(modelName);
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
 		
-		Object model = restService.bindAndValidate(body);
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
+		
+		modelUnmarshaller.validate(modelName, model);
 		
 		restService.save(model);
 
@@ -83,11 +61,13 @@ public class MasterRestController {
 			@ModelAttribute("model") String body,
 			@PathVariable("modelName") String modelName,
 			MultipartHttpServletRequest request
-			) throws BindException, NoDataFoundException, BeanTraversalException, IOException {
+			) throws BindException, BeanTraversalException, IOException, ServiceNotFoundException {
 
-		RestService restService = findRestService(modelName);
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
 		
-		Object model = restService.bindAndValidate(body);
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
+		
+		modelUnmarshaller.validate(modelName, model);
 		
 		MultipartRequest multipartRequest = new MultipartRequest(model, request);
 		
@@ -104,11 +84,13 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> put(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, NoDataFoundException, BeanTraversalException {
+			) throws BindException, BeanTraversalException, ServiceNotFoundException {
 
-		RestService restService = findRestService(modelName);
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
 
-		Object model = restService.bindAndValidate(body);
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
+		
+		modelUnmarshaller.validate(modelName, model);
 		
 		restService.update(model);
 
@@ -122,11 +104,13 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> delete(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, NoDataFoundException, BeanTraversalException {
+			) throws BindException, BeanTraversalException, ServiceNotFoundException {
 
-		RestService restService = findRestService(modelName);
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
 
-		Object model = restService.bindAndValidate(body);
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
+		
+		modelUnmarshaller.validate(modelName, model);
 		
 		restService.delete(model);
 

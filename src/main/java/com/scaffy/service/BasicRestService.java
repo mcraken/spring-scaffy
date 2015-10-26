@@ -74,4 +74,8 @@ public class BasicRestService implements RestService {
 
 	}
 
+	public Class<?> modelType() {
+		return modelClass;
+	}
+
 }
