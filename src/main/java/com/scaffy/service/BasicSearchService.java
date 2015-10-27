@@ -11,23 +11,56 @@ import com.scaffy.dao.SearchDao;
 public class BasicSearchService implements SearchService {
 
 	private Class<?> modelClass;
-
+	
+	private String dbSearchType;
+	
+	private String ftSearchType;
+	
 	@Autowired
-	private SearchDao searchDao;
-
+	private ServiceBroker serviceBroker;
+	
 	public void setModelClass(String modelName) throws ClassNotFoundException {
 		this.modelClass = Class.forName(modelName);
 	}
-
-	public List<?> acquire(RestSearchKey restSearchKey)
-			throws InvalidCriteriaException, NoDataFoundException {
+	
+	public void setDbSearchType(String dbSearchType) {
+		this.dbSearchType = dbSearchType;
+	}
+	
+	public void setFtSearchType(String ftSearchType) {
+		this.ftSearchType = ftSearchType;
+	}
+	
+	public List<?> db(RestSearchKey restSearchKey)
+			throws InvalidCriteriaException, NoDataFoundException, ServiceNotFoundException {
+		
+		if(dbSearchType == null)
+			throw new ServiceNotFoundException("Null DB Search Type");
+		
+		SearchDao searchDao = serviceBroker.findBean(dbSearchType, SearchDao.class);
 		
 		List<?> result = searchDao.read(restSearchKey, modelClass); 
-
+		
 		if(result == null || result.size() == 0)
 			throw new NoDataFoundException("Nothing matches your key");
+		
+		return result;
+	}
 
-		return result; 
+	public List<?> fullText(RestSearchKey restSearchKey)
+			throws InvalidCriteriaException, NoDataFoundException, ServiceNotFoundException {
+		
+		if(ftSearchType == null)
+			throw new ServiceNotFoundException("Null Full Text Search Type");
+		
+		SearchDao searchDao = serviceBroker.findBean(ftSearchType, SearchDao.class);
+		
+		List<?> result = searchDao.read(restSearchKey, modelClass); 
+		
+		if(result == null || result.size() == 0)
+			throw new NoDataFoundException("Nothing matches your key");
+		
+		return result;
 	}
 
 }

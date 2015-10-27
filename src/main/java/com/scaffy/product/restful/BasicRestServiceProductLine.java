@@ -34,7 +34,7 @@ public class BasicRestServiceProductLine implements ProductFactoryLine {
 				};
 	}
 
-	public void beforeRegistration(RootBeanDefinition productBean, RootBeanDefinition sourceBean) {
+	public void beforeRegistration(Annotation targetAnnotation, RootBeanDefinition productBean, RootBeanDefinition sourceBean) {
 		
 		MutablePropertyValues propertyValues = new MutablePropertyValues();
 		

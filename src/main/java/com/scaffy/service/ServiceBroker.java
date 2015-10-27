@@ -41,6 +41,16 @@ public class ServiceBroker {
 		
 		return (T)service;
 	}
+	
+	public <T>T findBean(String name, Class<T> type) throws ServiceNotFoundException{
+		
+		T bean = applicationContext.getBean(name, type);
+		
+		if(bean == null)
+			throw new ServiceNotFoundException(name);
+		
+		return bean;
+	}
 
 	@SuppressWarnings("unchecked")
 	private <T> T lookupServiceBean(String name, Class<T> type,

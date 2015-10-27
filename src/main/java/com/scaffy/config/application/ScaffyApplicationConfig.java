@@ -8,9 +8,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.Configuration;
 
-import com.scaffy.controller.AcquisitionController;
 import com.scaffy.controller.MasterRestController;
 import com.scaffy.controller.RESTErrorHandler;
+import com.scaffy.controller.SearchController;
 import com.scaffy.service.ModelUnmarshaller;
 import com.scaffy.service.ServiceBroker;
 import com.scaffy.weave.ClassAnnotationWeavelet;
@@ -35,7 +35,7 @@ public class ScaffyApplicationConfig extends BeanRegistrarConfig{
 			registerBean(ServiceBroker.class, registry);
 			
 			registerBean(ModelUnmarshaller.class, registry);
-
+			
 			registerBean(
 					MasterRestController.class.getName(),
 					MasterRestController.class.getName() + "_Bean",
@@ -47,11 +47,11 @@ public class ScaffyApplicationConfig extends BeanRegistrarConfig{
 					);
 
 			registerBean(
-					AcquisitionController.class.getName(), 
-					AcquisitionController.class.getName() + "_Bean", 
+					SearchController.class.getName(), 
+					SearchController.class.getName() + "_Bean", 
 					new ClassAnnotationWeavelet(
 							new RestControllerBuilder(),
-							new RequestMappingBuilder(getScaffyProperty("restful.acquisition.uri"))
+							new RequestMappingBuilder(getScaffyProperty("restful.search.uri"))
 							),
 							registry
 					);

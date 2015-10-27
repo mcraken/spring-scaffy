@@ -25,7 +25,7 @@ import com.scaffy.acquisition.jpa.criteriahandlers.CriteriaHandler;
 import com.scaffy.acquisition.key.RestCriteria;
 import com.scaffy.acquisition.key.RestSearchKey;
 
-public class JPAQueryDao implements QueryDao {
+public class JPASearchDao implements SearchDao {
 
 	@Value("#{jpaCriteriaHandlers}")
 	private Map<String, CriteriaHandler> criteriaHandlers;

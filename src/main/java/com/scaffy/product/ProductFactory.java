@@ -119,7 +119,7 @@ public class ProductFactory {
 		
 		RootBeanDefinition runtimeBeanDef = new RootBeanDefinition(runtimeBeanClass, Autowire.BY_TYPE.value(), true);
 		
-		productLine.beforeRegistration(productBean, runtimeBeanDef);
+		productLine.beforeRegistration(targetAnnotation, productBean, runtimeBeanDef);
 
 		registry.registerBeanDefinition(annotatedProductClass.getName(), productBean);
 		

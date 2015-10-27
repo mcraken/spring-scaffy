@@ -62,7 +62,7 @@ public class InterceptorProductLine implements ProductFactoryLine {
 		return new AnnotationWeavelet[]{methodAnnotationWeavelet};
 	}
 
-	public void beforeRegistration(RootBeanDefinition productBean,
+	public void beforeRegistration(Annotation targetAnnotation, RootBeanDefinition productBean,
 			RootBeanDefinition runtimeBean) {
 
 		MutablePropertyValues propertyValues = new MutablePropertyValues();

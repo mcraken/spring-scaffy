@@ -17,7 +17,7 @@ import com.scaffy.dao.SearchDao;
 public class ScaffyHibernateSearchConfig {
 	
 	@Bean
-	public SearchDao searchDao() {
+	public SearchDao ft_hibernate() {
 		
 		return new HibernateSearchDao();
 	}

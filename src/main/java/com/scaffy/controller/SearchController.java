@@ -17,15 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.scaffy.acquisition.exception.InvalidCriteriaException;
 import com.scaffy.acquisition.exception.InvalidCriteriaSyntaxException;
 import com.scaffy.acquisition.key.RestSearchKey;
-import com.scaffy.service.AcquisitionService;
 import com.scaffy.service.ModelUnmarshaller;
 import com.scaffy.service.NoDataFoundException;
-import com.scaffy.service.QueryService;
 import com.scaffy.service.SearchService;
 import com.scaffy.service.ServiceBroker;
 import com.scaffy.service.ServiceNotFoundException;
 
-public class AcquisitionController  {
+public class SearchController  {
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -35,17 +33,6 @@ public class AcquisitionController  {
 
 	@Autowired
 	private ServiceBroker serviceBroker;
-
-	protected <T extends AcquisitionService>List<?> executeAcquireRequest(
-			RestSearchKey restSearchKey, Class<T> serviceType) throws NoDataFoundException,
-			InvalidCriteriaException, ServiceNotFoundException {
-
-		String resourceName = restSearchKey.getResourceName();
-
-		AcquisitionService acquisitionService = serviceBroker.findService(resourceName, serviceType);
-
-		return acquisitionService.acquire(restSearchKey);
-	}
 
 	private RestSearchKey processKey(String searchKey) throws BindException,
 	InvalidCriteriaSyntaxException {
@@ -81,7 +68,9 @@ public class AcquisitionController  {
 
 		RestSearchKey restSearchKey = processKey(searchKey);
 		
-		List<?> result = executeAcquireRequest(restSearchKey, QueryService.class); 
+		SearchService searchService = serviceBroker.findService(restSearchKey.getResourceName(), SearchService.class);
+
+		List<?> result = searchService.db(restSearchKey); 
 		
 		return new ResponseEntity<SuccessResponse>(new SuccessResponse(result), HttpStatus.OK);
 	}
@@ -95,9 +84,13 @@ public class AcquisitionController  {
 		
 		Map<String, List<?>> results = new HashMap<String, List<?>>();
 		
+		SearchService searchService = null;
+		
 		for(RestSearchKey restSearchKey : restSearchKeys){
 			
-			results.put(restSearchKey.getResourceName(), executeAcquireRequest(restSearchKey, QueryService.class));
+			searchService = serviceBroker.findService(restSearchKey.getResourceName(), SearchService.class);
+
+			results.put(restSearchKey.getResourceName(), searchService.db(restSearchKey));
 		}
 		
 		return new ResponseEntity<SuccessResponse>(new SuccessResponse(results), HttpStatus.OK);
@@ -110,7 +103,9 @@ public class AcquisitionController  {
 
 		RestSearchKey restSearchKey = processKey(searchKey);
 		
-		List<?> result = executeAcquireRequest(restSearchKey, SearchService.class); 
+		SearchService searchService = serviceBroker.findService(restSearchKey.getResourceName(), SearchService.class);
+
+		List<?> result = searchService.fullText(restSearchKey);
 		
 		return new ResponseEntity<SuccessResponse>(new SuccessResponse(result), HttpStatus.OK);
 	}

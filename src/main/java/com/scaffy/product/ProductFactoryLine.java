@@ -10,6 +10,6 @@ public interface ProductFactoryLine {
 	
 	public abstract AnnotationWeavelet[] createWeavelets(Annotation targetAnnotation);
 	
-	public abstract void beforeRegistration(RootBeanDefinition productBean, RootBeanDefinition runtimeBean);
+	public abstract void beforeRegistration(Annotation targetAnnotation, RootBeanDefinition productBean, RootBeanDefinition runtimeBean);
 	
 }

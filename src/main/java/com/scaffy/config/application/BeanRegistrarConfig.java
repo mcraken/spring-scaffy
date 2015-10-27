@@ -56,6 +56,13 @@ public abstract class BeanRegistrarConfig implements BeanDefinitionRegistryPostP
 
 		registry.registerBeanDefinition(beanClass.getName(), bean);
 	}
+	
+	protected void registerBean(String name, Class<?> beanClass, BeanDefinitionRegistry registry) {
+		
+		RootBeanDefinition bean = new RootBeanDefinition(beanClass, Autowire.BY_TYPE.value(), true);
+
+		registry.registerBeanDefinition(name, bean);
+	}
 
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
