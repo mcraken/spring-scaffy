@@ -39,6 +39,8 @@ public class JPARESTDao extends BasicRESTDao {
 
 			public void visit(Object bean) {
 				
+				bean = entityManager.merge(bean);
+				
 				entityManager.remove(bean);
 			}
 		});
