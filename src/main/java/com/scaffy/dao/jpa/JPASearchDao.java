@@ -1,4 +1,4 @@
-package com.scaffy.dao;
+package com.scaffy.dao.jpa;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,6 +24,7 @@ import com.scaffy.acquisition.exception.InvalidCriteriaException;
 import com.scaffy.acquisition.jpa.criteriahandlers.CriteriaHandler;
 import com.scaffy.acquisition.key.RestCriteria;
 import com.scaffy.acquisition.key.RestSearchKey;
+import com.scaffy.dao.SearchDao;
 
 public class JPASearchDao implements SearchDao {
 

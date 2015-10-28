@@ -1,6 +1,7 @@
 package com.scaffy.dao;
 
-import com.scaffy.service.bean.BeanTraversalException;
+import com.scaffy.dao.bean.BeanTraversalException;
+
 
 public interface RESTDao {
 

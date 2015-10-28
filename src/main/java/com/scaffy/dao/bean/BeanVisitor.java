@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.scaffy.service.bean;
+package com.scaffy.dao.bean;
 
 /**
  * @author 	Sherief Shawky

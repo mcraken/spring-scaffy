@@ -1,4 +1,4 @@
-package com.scaffy.service.bean;
+package com.scaffy.dao.bean;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

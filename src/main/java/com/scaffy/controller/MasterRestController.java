@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.scaffy.dao.bean.BeanTraversalException;
 import com.scaffy.service.ModelUnmarshaller;
 import com.scaffy.service.RestService;
 import com.scaffy.service.ServiceBroker;
 import com.scaffy.service.ServiceNotFoundException;
-import com.scaffy.service.bean.BeanTraversalException;
 
 public class MasterRestController {
 

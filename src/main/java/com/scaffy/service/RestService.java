@@ -1,7 +1,7 @@
 package com.scaffy.service;
 
 import com.scaffy.controller.MultipartRequest;
-import com.scaffy.service.bean.BeanTraversalException;
+import com.scaffy.dao.bean.BeanTraversalException;
 
 
 public interface RestService {

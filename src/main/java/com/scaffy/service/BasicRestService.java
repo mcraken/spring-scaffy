@@ -1,17 +1,11 @@
 package com.scaffy.service;
 
-import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.Validator;
 
 import com.scaffy.controller.MultipartRequest;
 import com.scaffy.dao.RESTDao;
-import com.scaffy.service.bean.BeanTraversalException;
+import com.scaffy.dao.bean.BeanTraversalException;
 
 public class BasicRestService implements RestService {
 
@@ -21,31 +15,14 @@ public class BasicRestService implements RestService {
 	private GsonHttpMessageConverter httpMessageConverter;
 
 	@Autowired
-	private Validator validator;
-
-	@Autowired
 	private RESTDao restDao;
 	
 	@Autowired(required = false)
 	private AttachmentService attachmentService;
 
 	public void setModelClass(String modelName) throws ClassNotFoundException {
+		
 		this.modelClass = Class.forName(modelName);
-	}
-
-	public Object bindAndValidate(String jsonBody)
-			throws BindException {
-
-		Object model = httpMessageConverter.getGson().fromJson(jsonBody, modelClass);
-
-		BindingResult bindingResult = new MapBindingResult(new HashMap<String, Object>(), modelClass.getSimpleName()); 
-
-		validator.validate(model, bindingResult);
-
-		if(bindingResult.hasErrors())
-			throw new BindException(bindingResult);
-
-		return model;
 	}
 
 	public void save(Object model) throws BeanTraversalException {
@@ -75,6 +52,7 @@ public class BasicRestService implements RestService {
 	}
 
 	public Class<?> modelType() {
+		
 		return modelClass;
 	}
 

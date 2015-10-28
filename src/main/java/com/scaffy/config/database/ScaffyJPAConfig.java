@@ -14,9 +14,9 @@ import com.scaffy.acquisition.jpa.criteriahandlers.LessThanCriterionHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LikeCriteriaHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LogicalCriteriaHandler;
-import com.scaffy.dao.JPARESTDao;
-import com.scaffy.dao.JPASearchDao;
 import com.scaffy.dao.RESTDao;
+import com.scaffy.dao.jpa.JPARESTDao;
+import com.scaffy.dao.jpa.JPASearchDao;
 
 @Configuration
 public class ScaffyJPAConfig {
