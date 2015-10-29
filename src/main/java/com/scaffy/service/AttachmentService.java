@@ -3,7 +3,8 @@
  */
 package com.scaffy.service;
 
-import com.scaffy.controller.MultipartRequest;
+import com.scaffy.controller.MultipartResponse;
+import com.scaffy.entity.attachment.Attachment;
 
 /**
  * @author 	Sherief Shawky
@@ -11,5 +12,7 @@ import com.scaffy.controller.MultipartRequest;
  */
 public interface AttachmentService {
 	
-	public void createAttachments(MultipartRequest request);
+	public void createAttachments(MultipartResponse request);
+	
+	public void readAttachment(Attachment attachment);
 }

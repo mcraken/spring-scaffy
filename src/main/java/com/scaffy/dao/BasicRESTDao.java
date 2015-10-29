@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.WordUtils;
 
+import com.scaffy.controller.MultipartResponse;
 import com.scaffy.dao.bean.BeanMethod;
 import com.scaffy.dao.bean.BeanTraversalException;
 import com.scaffy.dao.bean.BeanVisitor;
@@ -67,15 +68,21 @@ public abstract class BasicRESTDao implements RESTDao{
 	/* (non-Javadoc)
 	 * @see com.scaffy.service.EntityService#create(java.lang.Object)
 	 */
-	public void create(Object model) throws BeanTraversalException {
+	public void create(Object model) throws BeanTraversalException, DaoOperationException {
 
 		execute(model, BeanMethod.Method.POST);
 	}
 
+	public void createWithAttachments(MultipartResponse request)
+			throws BeanTraversalException, DaoOperationException {
+		
+		execute(request, BeanMethod.Method.POST);
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.scaffy.service.EntityService#update(java.lang.Object)
 	 */
-	public void update(Object model) throws BeanTraversalException {
+	public void update(Object model) throws BeanTraversalException, DaoOperationException {
 
 		execute(model, BeanMethod.Method.PUT);
 	}
@@ -83,12 +90,14 @@ public abstract class BasicRESTDao implements RESTDao{
 	/* (non-Javadoc)
 	 * @see com.scaffy.service.EntityService#delete(java.lang.Object)
 	 */
-	public void delete(Object model) throws BeanTraversalException {
+	public void delete(Object model) throws BeanTraversalException, DaoOperationException {
 
 		execute(model, BeanMethod.Method.DELETE);
 	}
 
 	protected abstract void execute(Object model, BeanMethod.Method method)
-			throws BeanTraversalException;
+			throws BeanTraversalException, DaoOperationException;
 
+	protected abstract void execute(MultipartResponse request, BeanMethod.Method method)
+			throws BeanTraversalException, DaoOperationException;
 }

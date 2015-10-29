@@ -1,6 +1,6 @@
 package com.scaffy.controller;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.scaffy.dao.bean.BeanTraversalException;
+import com.scaffy.entity.attachment.Attachment;
+import com.scaffy.service.AttachmentService;
 import com.scaffy.service.ModelUnmarshaller;
+import com.scaffy.service.NoDataFoundException;
 import com.scaffy.service.RestService;
+import com.scaffy.service.RestServiceException;
 import com.scaffy.service.ServiceBroker;
 import com.scaffy.service.ServiceNotFoundException;
 
@@ -38,7 +41,7 @@ public class MasterRestController {
 	public ResponseEntity<SuccessResponse> post(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, BeanTraversalException, ServiceNotFoundException {
+			) throws BindException, ServiceNotFoundException, RestServiceException {
 
 		RestService restService = serviceBroker.findService(modelName, RestService.class);
 		
@@ -53,6 +56,26 @@ public class MasterRestController {
 
 		return responseEntity;
 	}
+
+	@RequestMapping(value = "/attachment/{targetName}/{id}", method = RequestMethod.GET)
+	public void readAttachment(
+			HttpServletResponse response, 
+			@PathVariable("id") 
+			Long id,
+			@PathVariable("targetName")
+			String targetName
+			) throws NoDataFoundException, ServiceNotFoundException, RestServiceException, AttachmentException {
+
+		RestService attachmentRestService = serviceBroker.findService("attachment", RestService.class);
+		
+		Attachment attachment = attachmentRestService.read(id);
+		
+		AttachmentService attachmentService = serviceBroker.findBean(targetName, AttachmentService.class);
+		
+		attachmentService.readAttachment(attachment);
+		
+		new MultipartResponse(attachment).sendAttachment(response);
+	}
 	
 	@RequestMapping(value = "/multi/{modelName}", method = RequestMethod.POST, 
 			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
@@ -61,7 +84,7 @@ public class MasterRestController {
 			@ModelAttribute("model") String body,
 			@PathVariable("modelName") String modelName,
 			MultipartHttpServletRequest request
-			) throws BindException, BeanTraversalException, IOException, ServiceNotFoundException {
+			) throws BindException, ServiceNotFoundException, AttachmentException, RestServiceException {
 
 		RestService restService = serviceBroker.findService(modelName, RestService.class);
 		
@@ -69,12 +92,18 @@ public class MasterRestController {
 		
 		modelUnmarshaller.validate(modelName, model);
 		
-		MultipartRequest multipartRequest = new MultipartRequest(model, request);
+		MultipartResponse multipartResponse = new MultipartResponse(model, request);
 		
-		restService.saveWithAttachments(multipartRequest);
-
+		AttachmentService attachmentService = serviceBroker.findBean(
+				multipartResponse.getTargetName(), 
+				AttachmentService.class);
+		
+		attachmentService.createAttachments(multipartResponse);
+		
+		restService.saveWithAttachments(multipartResponse);
+		
 		ResponseEntity<SuccessResponse> responseEntity = 
-				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.CREATED);
+				new ResponseEntity<SuccessResponse>(new SuccessResponse(multipartResponse), HttpStatus.CREATED);
 
 		return responseEntity;
 	}
@@ -84,7 +113,7 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> put(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, BeanTraversalException, ServiceNotFoundException {
+			) throws BindException, ServiceNotFoundException, RestServiceException {
 
 		RestService restService = serviceBroker.findService(modelName, RestService.class);
 
@@ -104,7 +133,7 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> delete(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException, BeanTraversalException, ServiceNotFoundException {
+			) throws BindException, ServiceNotFoundException, RestServiceException {
 
 		RestService restService = serviceBroker.findService(modelName, RestService.class);
 

@@ -1,18 +1,19 @@
 package com.scaffy.service;
 
-import com.scaffy.controller.MultipartRequest;
-import com.scaffy.dao.bean.BeanTraversalException;
+import com.scaffy.controller.MultipartResponse;
 
 
 public interface RestService {
 	
-	public void save(Object model) throws BeanTraversalException;
+	public <T>T read(Object key) throws RestServiceException, NoDataFoundException;
 	
-	public void saveWithAttachments(MultipartRequest request) throws BeanTraversalException;
+	public void save(Object model) throws RestServiceException;
 	
-	public void update(Object model) throws BeanTraversalException;
+	public void saveWithAttachments(MultipartResponse request) throws RestServiceException;
 	
-	public void delete(Object model) throws BeanTraversalException;
+	public void update(Object model) throws RestServiceException;
+	
+	public void delete(Object model) throws RestServiceException;
 	
 	public Class<?> modelType();
 }
