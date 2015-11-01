@@ -141,6 +141,8 @@ public class JPASearchDao implements SearchDao {
 
 		try {
 
+			t.begin();
+			
 			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
 			CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(typeClass);
