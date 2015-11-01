@@ -26,6 +26,7 @@ public class ScaffyJPAConfig {
 		return new JPARESTDao();
 	}
 	
+	@Bean
 	public JPASearchDao db_jpa() {
 		return new JPASearchDao();
 	}
