@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface Searchable {
 	
 	public enum DBSearchType {
-		IGNORE(""), JPA("jpa");
+		IGNORE(""), JPA("db_jpa");
 		
 		public String value;
 		
