@@ -1,11 +1,10 @@
 package com.scaffy.config.database;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.Search;
+import org.hibernate.Session;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,40 +14,36 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class HibernateSearchConfig {
+public class SessionHibernateSearchConfig {
 
-	private static Logger logger = LoggerFactory.getLogger(HibernateSearchConfig.class);
+	private static Logger logger = LoggerFactory.getLogger(SessionHibernateSearchConfig.class);
 
 	@Value("${database.reindex}")
 	private boolean reindexDatabase;
 
 	@Autowired
-	private EntityManagerFactory entityManagerFactory;
+	private Session session;
 
-	private EntityManager entityManager;
-	
 	@PostConstruct
 	public void init() {
 
-		entityManager = entityManagerFactory.createEntityManager();
-		
 		if(reindexDatabase){
 			
-			FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+			FullTextSession fullTextSession = Search.getFullTextSession(session);
 			
-			rebuildDatabaseIndex(fullTextEntityManager);
+			rebuildDatabaseIndex(fullTextSession);
 		}
 
 	}
 
 	private void rebuildDatabaseIndex(
-			FullTextEntityManager fullTextEntityManager) {
+			FullTextSession fullTextSession) {
 
 		try {
 
 			logger.info("Going to rebuild database index");
 
-			fullTextEntityManager.createIndexer().startAndWait();
+			fullTextSession.createIndexer().startAndWait();
 
 			logger.info("Rebuilding database index is done!");
 			
@@ -60,8 +55,8 @@ public class HibernateSearchConfig {
 
 	@Bean
 	@Scope("prototype")
-	public FullTextEntityManager fullTextEntityManager() {
+	public FullTextSession fullTextSession() {
 
-		return Search.getFullTextEntityManager(entityManager);
+		return Search.getFullTextSession(session);
 	}
 }

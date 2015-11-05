@@ -10,16 +10,23 @@ import com.scaffy.acquisition.hibernatesearch.criteriahandlers.CriteriaHandler;
 import com.scaffy.acquisition.hibernatesearch.criteriahandlers.EqualCriteriaHandler;
 import com.scaffy.acquisition.hibernatesearch.criteriahandlers.LogicalCriteriaHandler;
 import com.scaffy.acquisition.hibernatesearch.criteriahandlers.NotEqualCriteriaHandler;
-import com.scaffy.dao.HibernateSearchDao;
 import com.scaffy.dao.SearchDao;
+import com.scaffy.dao.hibernate.HibernateSearchBuilder;
+import com.scaffy.dao.hibernate.JPAHibernateSearchDao;
 
 @Configuration
 public class ScaffyHibernateSearchConfig {
 	
 	@Bean
-	public SearchDao ft_hibernate() {
+	public SearchDao ft_hibernate_jpa() {
 		
-		return new HibernateSearchDao();
+		return new JPAHibernateSearchDao();
+	}
+	
+	@Bean
+	public HibernateSearchBuilder hibernateSearchBuilder() {
+		
+		return new HibernateSearchBuilder();
 	}
 	
 	@Bean

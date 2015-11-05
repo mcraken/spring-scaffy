@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface Searchable {
 	
 	public enum DBSearchType {
-		IGNORE(""), JPA("db_jpa");
+		IGNORE(""), JPA("db_jpa"), HIBERNATE("db_hibernate");
 		
 		public String value;
 		
@@ -20,7 +20,7 @@ public @interface Searchable {
 	}
 	
 	public enum FTSearchType {
-		IGNORE(""), Hibernate("ft_hibernate");
+		IGNORE(""), Hibernate_JPA("ft_hibernate_jpa"), Hibernate_SESSION("ft_hibernate_session");
 		
 		public String value;
 		

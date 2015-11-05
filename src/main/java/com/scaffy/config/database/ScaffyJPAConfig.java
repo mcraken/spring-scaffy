@@ -16,7 +16,7 @@ import com.scaffy.acquisition.jpa.criteriahandlers.LikeCriteriaHandler;
 import com.scaffy.acquisition.jpa.criteriahandlers.LogicalCriteriaHandler;
 import com.scaffy.dao.RESTDao;
 import com.scaffy.dao.jpa.JPARESTDao;
-import com.scaffy.dao.jpa.JPASearchDao;
+import com.scaffy.dao.jpa.JPAQueryDao;
 
 @Configuration
 public class ScaffyJPAConfig {
@@ -27,8 +27,8 @@ public class ScaffyJPAConfig {
 	}
 	
 	@Bean
-	public JPASearchDao db_jpa() {
-		return new JPASearchDao();
+	public JPAQueryDao db_jpa() {
+		return new JPAQueryDao();
 	}
 	
 	@Bean
