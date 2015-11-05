@@ -1,5 +1,6 @@
 package com.scaffy.dao;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,32 +31,45 @@ public abstract class BasicRESTDao implements RESTDao{
 
 			visitors.get(mainMethod).visit(bean);
 
+		} else if(Collection.class.isAssignableFrom(bean.getClass())){
+			
+			Collection<?> beanAsCollection = (Collection<?>) bean;
+			
+			for(Object beanEntry : beanAsCollection)
+				traverse(beanEntry, mainMethod);
+			
 		} else {
 
-			try {
+			keepTraversing(bean, mainMethod);
+		}
+	}
 
-				Map<String, Object> descriptor = PropertyUtils.describe(bean);
+	private void keepTraversing(Object bean, BeanMethod.Method mainMethod)
+			throws BeanTraversalException {
+		
+		try {
 
-				descriptor.remove("class");
+			Map<String, Object> descriptor = PropertyUtils.describe(bean);
 
-				Set<String> properties = descriptor.keySet();
+			descriptor.remove("class");
 
-				for(String property : properties){
+			Set<String> properties = descriptor.keySet();
 
-					String methodName = "get" + WordUtils.capitalize(property);
+			for(String property : properties){
 
-					BeanMethod beanMethod = bean.getClass().getMethod(methodName).getAnnotation(BeanMethod.class);
+				String methodName = "get" + WordUtils.capitalize(property);
 
-					if(beanMethod != null)
-						traverse(descriptor.get(property), beanMethod.method());
-					else
-						traverse(descriptor.get(property), mainMethod); 
-				}
+				BeanMethod beanMethod = bean.getClass().getMethod(methodName).getAnnotation(BeanMethod.class);
 
-			} catch (Exception e) {
-
-				throw new BeanTraversalException(e);
+				if(beanMethod != null)
+					traverse(descriptor.get(property), beanMethod.method());
+				else
+					traverse(descriptor.get(property), mainMethod); 
 			}
+
+		} catch (Exception e) {
+
+			throw new BeanTraversalException(e);
 		}
 	}
 
