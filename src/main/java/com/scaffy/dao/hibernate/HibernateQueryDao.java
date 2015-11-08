@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
@@ -28,7 +28,7 @@ public class HibernateQueryDao implements SearchDao{
 	private Map<String, CriteriaHandler> criteriaHandlers;
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private Session session;
 	
 	@SuppressWarnings("unchecked")
 	private <T> List<T> executeSearchQuery(
@@ -127,13 +127,13 @@ public class HibernateQueryDao implements SearchDao{
 	public <T> List<T> read(RestSearchKey key, Class<T> typeClass)
 			throws InvalidCriteriaException {
 		
-		Transaction t = sessionFactory.getCurrentSession().getTransaction();
+		Transaction t = session.getTransaction();
 
 		try {
 
 			t.begin();
 			
-			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(typeClass);
+			Criteria criteria = session.createCriteria(typeClass);
 
 			Map<String, Criterion> crtsMap = buildCriteriaMap(key);
 
