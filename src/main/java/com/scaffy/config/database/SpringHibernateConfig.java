@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 public class SpringHibernateConfig {
@@ -17,13 +18,15 @@ public class SpringHibernateConfig {
 	
 	@Bean
 	@Autowired
-	public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
+	public LocalSessionFactoryBean sessionFactory(DataSource dataSource, PlatformTransactionManager transactinManager) {
 
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 
 		sessionFactory.setDataSource(dataSource);
 
 		sessionFactory.setConfigLocation(new ClassPathResource(configLocation));
+		
+		sessionFactory.setJtaTransactionManager(transactinManager);
 
 		return sessionFactory;
 	}
