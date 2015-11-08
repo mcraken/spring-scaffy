@@ -2,7 +2,7 @@ package com.scaffy.config.database;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.slf4j.Logger;
@@ -22,14 +22,14 @@ public class SessionHibernateSearchConfig {
 	private boolean reindexDatabase;
 
 	@Autowired
-	private Session session;
+	private SessionFactory sessionFactory;
 
 	@PostConstruct
 	public void init() {
 
 		if(reindexDatabase){
 			
-			FullTextSession fullTextSession = Search.getFullTextSession(session);
+			FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
 			
 			rebuildDatabaseIndex(fullTextSession);
 		}
@@ -57,6 +57,6 @@ public class SessionHibernateSearchConfig {
 	@Scope("prototype")
 	public FullTextSession fullTextSession() {
 
-		return Search.getFullTextSession(session);
+		return Search.getFullTextSession(sessionFactory.getCurrentSession());
 	}
 }
