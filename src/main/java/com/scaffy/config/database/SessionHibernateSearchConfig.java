@@ -3,6 +3,7 @@ package com.scaffy.config.database;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.slf4j.Logger;
@@ -28,10 +29,23 @@ public class SessionHibernateSearchConfig {
 	public void init() {
 
 		if(reindexDatabase){
-			
-			FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
-			
-			rebuildDatabaseIndex(fullTextSession);
+
+			Transaction t = null;
+
+			try{
+
+				t = sessionFactory.getCurrentSession().beginTransaction();
+
+				FullTextSession fullTextSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
+
+				rebuildDatabaseIndex(fullTextSession);
+				
+			} finally {
+				
+				if(t != null)
+					t.commit();
+			}
+
 		}
 
 	}
@@ -46,7 +60,7 @@ public class SessionHibernateSearchConfig {
 			fullTextSession.createIndexer().startAndWait();
 
 			logger.info("Rebuilding database index is done!");
-			
+
 		}  catch (InterruptedException e) {
 
 			logger.error("Failed to rebuild database index", e);
