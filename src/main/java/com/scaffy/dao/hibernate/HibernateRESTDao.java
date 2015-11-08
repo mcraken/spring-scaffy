@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +27,7 @@ import com.scaffy.entity.attachment.Attachment;
 public class HibernateRESTDao extends BasicRESTDao {
 
 	@Autowired
-	private Session session;
+	private SessionFactory sessionFactory;
 	
 	@PostConstruct
 	public void init() {
@@ -36,7 +36,7 @@ public class HibernateRESTDao extends BasicRESTDao {
 
 			public void visit(Object bean) {
 				
-				session.save(bean);
+				sessionFactory.getCurrentSession().save(bean);
 			}
 		});
 		
@@ -44,7 +44,7 @@ public class HibernateRESTDao extends BasicRESTDao {
 
 			public void visit(Object bean) {
 				
-				session.merge(bean);
+				sessionFactory.getCurrentSession().merge(bean);
 			}
 		});
 		
@@ -52,9 +52,9 @@ public class HibernateRESTDao extends BasicRESTDao {
 
 			public void visit(Object bean) {
 				
-				bean = session.merge(bean);
+				bean = sessionFactory.getCurrentSession().merge(bean);
 				
-				session.delete(bean);
+				sessionFactory.getCurrentSession().delete(bean);
 			}
 		});
 	}
@@ -64,7 +64,7 @@ public class HibernateRESTDao extends BasicRESTDao {
 	 */
 	public Object read(Object key, Class<?> type) throws DaoOperationException {
 		
-		Transaction t = session.beginTransaction();
+		Transaction t = sessionFactory.getCurrentSession().beginTransaction();
 		
 		Object model;
 		
@@ -72,7 +72,7 @@ public class HibernateRESTDao extends BasicRESTDao {
 			
 			t.begin();
 			
-			model = session.get(type, (Serializable)key);
+			model = sessionFactory.getCurrentSession().get(type, (Serializable)key);
 			
 			t.commit();
 			
@@ -93,7 +93,7 @@ public class HibernateRESTDao extends BasicRESTDao {
 	protected void execute(Object model, Method method)
 			throws BeanTraversalException, DaoOperationException {
 		
-		Transaction t = session.getTransaction();
+		Transaction t = sessionFactory.getCurrentSession().getTransaction();
 		
 		try {
 
@@ -124,7 +124,7 @@ public class HibernateRESTDao extends BasicRESTDao {
 	protected void execute(MultipartResponse request, Method method)
 			throws BeanTraversalException, DaoOperationException {
 		
-		Transaction t = session.getTransaction();
+		Transaction t = sessionFactory.getCurrentSession().getTransaction();
 		
 		try {
 
