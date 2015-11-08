@@ -1,5 +1,7 @@
 package com.scaffy.config.database;
 
+import java.io.IOException;
+
 import javax.sql.DataSource;
 
 import org.hibernate.Session;
@@ -21,7 +23,7 @@ public class SpringHibernateConfig {
 	
 	@Bean
 	@Autowired
-	public LocalSessionFactoryBean sessionFactory(DataSource dataSource, PlatformTransactionManager transactinManager) {
+	public LocalSessionFactoryBean sessionFactory(DataSource dataSource, PlatformTransactionManager transactinManager) throws IOException {
 
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 
@@ -31,6 +33,8 @@ public class SpringHibernateConfig {
 		
 		sessionFactory.setJtaTransactionManager(transactinManager);
 
+		sessionFactory.afterPropertiesSet();
+		
 		return sessionFactory;
 	}
 	
