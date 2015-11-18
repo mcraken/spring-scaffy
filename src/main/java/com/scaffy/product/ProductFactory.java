@@ -1,12 +1,14 @@
 package com.scaffy.product;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -19,33 +21,57 @@ import com.scaffy.weave.AnnotationWeaver;
 
 public class ProductFactory {
 
-	private String target;
+	private static Logger logger = LoggerFactory.getLogger(ProductFactory.class);
+	
+	private String[] runtimePackages;
 
 	private BeanDefinitionRegistry registry;
-	
-	public ProductFactory(String target, BeanDefinitionRegistry registry) {
 
-		this.target = target;
+	private String[] productLinePackages;
+
+	public ProductFactory(
+			String[] productLinePackages,
+			String[] runtimePackages,
+			BeanDefinitionRegistry registry) {
+		
+		this.runtimePackages = runtimePackages;
 		this.registry = registry;
+		this.productLinePackages = productLinePackages;
 	}
 
-	private <T extends Annotation>Set<BeanDefinition> getTargetBeansDefinitions(Class<T> annotationClass) {
+	private <T extends Annotation>Set<BeanDefinition> getBeanDefinitionsByAnnotation(Class<T> annotationClass, String[] targetPackages) throws NoBeansFoundException {
 
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
 
 		provider.addIncludeFilter(new AnnotationTypeFilter(annotationClass));
-
-		Set<BeanDefinition> beans = provider.findCandidateComponents(target);
-
-		return beans;
+		
+		Set<BeanDefinition> allBeans = new HashSet<BeanDefinition>(); 
+		
+		Set<BeanDefinition> beans = null;
+		
+		for(String targetPackage : targetPackages) {
+			
+			beans = provider.findCandidateComponents(targetPackage);
+			
+			if(beans != null && beans.size() != 0)
+				allBeans.addAll(beans);
+		}
+		
+		if(allBeans.size() == 0){
+			
+			String packages = "No beans found under: ";
+			
+			for(String targetPackage : targetPackages)
+				packages += targetPackage + " ";
+			
+			logger.error("Runtime beans unavailable", new NoBeansFoundException(packages));
+		}
+		
+		return allBeans;
 	}
 
-	private Class<?> weave(ProductFactoryLine<?> productLine, BeanDefinition bean, AnnotationWeavelet... annotationWeavelets) throws NotFoundException, CannotCompileException {
+	private Class<?> weave(String className, String beanClassName, AnnotationWeavelet... annotationWeavelets) throws NotFoundException, CannotCompileException {
 
-		String className = productLine.getProductClassName();
-		
-		String beanClassName = bean.getBeanClassName();
-		
 		AnnotationWeaver annotationWeaver = 
 				new AnnotationWeaver(
 						className, 
@@ -63,38 +89,69 @@ public class ProductFactory {
 		return modelClass.getAnnotation(annotationClass);
 	}
 
-	public <T extends Annotation>void produce(
-			Class<T> annotationClass,
-			List<ProductFactoryLine<T>> productLines
-			) throws ProductFactoryExcpetion {
+	private void registerProduct(
+			ProductLine productLineAnnotation,
+			BeanDefinition runtimeBean,
+			BeanDefinition productLineBean) throws NotFoundException,
+			CannotCompileException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+		Annotation targetAnnotation = getTargetAnnotation(runtimeBean, productLineAnnotation.runtimeAnnotationClass());
+		
+		Class<?> productClass = productLineAnnotation.productClass();
+		
+		logger.info(
+				"Weaving " + targetAnnotation.annotationType().getName() +
+				", on Product Type " + productClass.getName() +
+				", using Product Factory Line: " + productLineBean.getBeanClassName()
+				);
+		
+		ProductFactoryLine productLine = (ProductFactoryLine) Class.forName(productLineBean.getBeanClassName()).newInstance();
+		
+		Class<?> annotatedProductClass = weave(
+				productClass.getName(),
+				runtimeBean.getBeanClassName(),
+				productLine.createWeavelets(targetAnnotation)
+				);
+
+		Class<?> runtimeBeanClass = Class.forName(runtimeBean.getBeanClassName());
+		
+		RootBeanDefinition productBean = new RootBeanDefinition(annotatedProductClass, Autowire.BY_TYPE.value(), true);
+		
+		RootBeanDefinition runtimeBeanDef = new RootBeanDefinition(runtimeBeanClass, Autowire.BY_TYPE.value(), true);
+		
+		productLine.beforeRegistration(targetAnnotation, productBean, runtimeBeanDef);
+
+		registry.registerBeanDefinition(annotatedProductClass.getName(), productBean);
+		
+		if(productLineAnnotation.registerRuntimeBean())
+			registry.registerBeanDefinition(runtimeBeanClass.getName(), runtimeBeanDef);
+	}
+
+	public void produce() throws ProductFactoryExcpetion {
 		
 		try {
 			
-			T targetAnnotation;
+			ProductLine productLineAnnotation = null;
+			
+			Set<BeanDefinition> runtimeBeans = null;
+			
+			Set<BeanDefinition> productLineBeans = getBeanDefinitionsByAnnotation(ProductLine.class, productLinePackages);
+			
+			for(BeanDefinition productLineBean : productLineBeans){
 
-			RootBeanDefinition rootDefinition;
-			
-			Set<BeanDefinition> beans = getTargetBeansDefinitions(annotationClass);
-			
-			for(BeanDefinition bean : beans) {
+				productLineAnnotation = getTargetAnnotation(productLineBean, ProductLine.class);
 				
-				targetAnnotation = getTargetAnnotation(bean, annotationClass);
+				runtimeBeans = getBeanDefinitionsByAnnotation(productLineAnnotation.runtimeAnnotationClass(), runtimePackages);
 				
-				for(ProductFactoryLine<T> productLine : productLines){
+				if(runtimeBeans != null)
+				for(BeanDefinition runtimeBean : runtimeBeans){
 					
-					Class<?> clazz = weave(
-							productLine,
-							bean,
-							productLine.createWeavelets(targetAnnotation)
+					registerProduct(
+							productLineAnnotation, 
+							runtimeBean,
+							productLineBean
 							);
-					
-					rootDefinition = new RootBeanDefinition(clazz, Autowire.BY_TYPE.value(), true);
-					
-					productLine.beforeRegistration(rootDefinition, bean);
-					
-					registry.registerBeanDefinition(clazz.getName(), rootDefinition);
 				}
-
 			}
 			
 		} catch (Exception e) {

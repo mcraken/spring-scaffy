@@ -1,5 +1,6 @@
 package com.scaffy.config.database;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -18,20 +18,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableJpaRepositories
 @EnableTransactionManagement(proxyTargetClass = true)
-@PropertySource("classpath:database.properties")
 public class SpringJPAConfig {
+
+	@Autowired
+	private DataSource dataSource;
 	
+	@Autowired
 	private JpaVendorAdapter vendoAdapter;
 	
-	@Value("${database.jpa.entities}")
-	private String entityPackages;
-	
-	@Value("${database.jpa.persistence}")
-	private String persistenceLocation;
+	@Value("${database.jpa.unit}")
+	private String persistenceUnit;
 	
 	@Bean
 	@Autowired
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		
 		LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 		
@@ -39,9 +39,7 @@ public class SpringJPAConfig {
 		
 		factoryBean.setJpaVendorAdapter(vendoAdapter);
 		
-		factoryBean.setPackagesToScan(entityPackages.split(","));
-		
-		factoryBean.setPersistenceXmlLocation(persistenceLocation);
+		factoryBean.setPersistenceUnitName(persistenceUnit);
 		
 		return factoryBean;
 	}
@@ -55,5 +53,11 @@ public class SpringJPAConfig {
 		transactionManager.setEntityManagerFactory(emf);
 		
 		return transactionManager;
+	}
+	
+	@Bean
+	@Autowired
+	public EntityManager entityManager(EntityManagerFactory emf) {
+		 return emf.createEntityManager();
 	}
 }

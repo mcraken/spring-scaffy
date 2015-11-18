@@ -4,7 +4,7 @@ package com.scaffy.controller;
  * <p>ResponseObject class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  * @param <T>. A reponse object that wraps any type.
  * @version $Id: $Id
  */

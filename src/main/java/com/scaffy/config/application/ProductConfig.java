@@ -1,39 +1,23 @@
 package com.scaffy.config.application;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import com.scaffy.product.BasicRestServiceProductLine;
 import com.scaffy.product.ProductFactory;
-import com.scaffy.product.ProductFactoryExcpetion;
-import com.scaffy.product.ProductFactoryLine;
-import com.scaffy.product.RestModel;
-import com.scaffy.query.jpa.criteriahandlers.CriteriaHandler;
-import com.scaffy.query.jpa.criteriahandlers.EqualCriteriaHandler;
-import com.scaffy.query.jpa.criteriahandlers.GreaterThanCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.GreaterThanOrEqualCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.LessThanCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.LessThanOrEqualCriterionHandler;
-import com.scaffy.query.jpa.criteriahandlers.LikeCriteriaHandler;
-import com.scaffy.query.jpa.criteriahandlers.LogicalCriteriaHandler;
 
 @Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-
-		return new PropertySourcesPlaceholderConfigurer();
-	}
+	private static Logger logger = LoggerFactory.getLogger(ProductConfig.class);
 	
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
@@ -45,40 +29,22 @@ public class ProductConfig implements BeanDefinitionRegistryPostProcessor{
 		
 		try {
 			
-			ProductFactory productFactory = new ProductFactory("com.test.entities", registry);
+			Properties prop = new Properties();
 			
-			ArrayList<ProductFactoryLine<RestModel>> productLines = new ArrayList<ProductFactoryLine<RestModel>>();
+			prop.load(getClass().getClassLoader().getResourceAsStream("scaffy.properties"));
 			
-			productLines.add(new BasicRestServiceProductLine());
+			ProductFactory productFactory = new ProductFactory(
+					prop.getProperty("scaffy.products.productPackages").split(","),
+					prop.getProperty("scaffy.products.runtimePackages").split(","), 
+					registry);
 			
-			productFactory.produce(RestModel.class, productLines);
+			productFactory.produce();
 			
-		} catch (ProductFactoryExcpetion e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			
+			logger.error("Product Factory Failed!", e);
 		}
 
 	}
-
-	@Bean
-	public Map<String, CriteriaHandler> criteriaHandlers(){
-
-		HashMap<String, CriteriaHandler> criteriaHandlers = new HashMap<String, CriteriaHandler>();
-
-		criteriaHandlers.put("gt", new GreaterThanCriterionHandler());
-
-		criteriaHandlers.put("eq", new EqualCriteriaHandler());
-
-		criteriaHandlers.put("ge", new GreaterThanOrEqualCriterionHandler());
-		
-		criteriaHandlers.put("lt", new LessThanCriterionHandler());
-		
-		criteriaHandlers.put("le", new LessThanOrEqualCriterionHandler());
-		
-		criteriaHandlers.put("lk", new LikeCriteriaHandler());
-		
-		criteriaHandlers.put("lg", new LogicalCriteriaHandler());
-		
-		return criteriaHandlers;
-	}
-
+	
 }

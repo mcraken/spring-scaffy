@@ -1,0 +1,55 @@
+package com.scaffy.product.restful;
+
+import java.lang.annotation.Annotation;
+
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+
+import com.scaffy.product.ProductFactoryLine;
+import com.scaffy.product.ProductLine;
+import com.scaffy.service.BasicRestService;
+import com.scaffy.weave.AnnotationWeavelet;
+import com.scaffy.weave.CacheEvictBuilder;
+import com.scaffy.weave.MethodAnnotationWeavelet;
+import com.scaffy.weave.PreAuthorizeBuilder;
+import com.scaffy.weave.TransactionalBuilder;
+
+@ProductLine(
+		runtimeAnnotationClass = RestModel.class,
+		productClass = BasicRestService.class)
+public class BasicRestServiceProductLine implements ProductFactoryLine {
+
+	public AnnotationWeavelet[] createWeavelets(Annotation targetAnnotation) {
+		
+		RestModel restModelAnnotation = (RestModel) targetAnnotation;
+		
+		return new AnnotationWeavelet[]{
+				new MethodAnnotationWeavelet(
+						"save", 							
+						new PreAuthorizeBuilder(restModelAnnotation.authorization()),
+						new TransactionalBuilder()
+						),
+				modifierMethodAnnotationWeavlet("update", restModelAnnotation),
+				modifierMethodAnnotationWeavlet("delete", restModelAnnotation)
+				};
+	}
+
+	public void beforeRegistration(Annotation targetAnnotation, RootBeanDefinition productBean, RootBeanDefinition sourceBean) {
+		
+		MutablePropertyValues propertyValues = new MutablePropertyValues();
+		
+		propertyValues.add("modelClass", sourceBean.getBeanClassName());
+
+		productBean.setPropertyValues(propertyValues);
+	}
+
+	private MethodAnnotationWeavelet modifierMethodAnnotationWeavlet(String methodName, RestModel targetAnnotation) {
+		return new MethodAnnotationWeavelet(
+				methodName, 							
+				new PreAuthorizeBuilder(targetAnnotation.authorization()),
+				new CacheEvictBuilder(true),
+				new TransactionalBuilder()
+				);
+	}
+
+}

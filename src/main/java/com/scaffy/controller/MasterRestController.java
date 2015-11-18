@@ -1,99 +1,39 @@
 package com.scaffy.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.scaffy.query.exception.InvalidCriteriaException;
-import com.scaffy.query.exception.InvalidCriteriaSyntaxException;
-import com.scaffy.query.key.RestSearchKey;
+import com.scaffy.entity.attachment.Attachment;
+import com.scaffy.service.AttachmentService;
+import com.scaffy.service.ModelUnmarshaller;
 import com.scaffy.service.NoDataFoundException;
 import com.scaffy.service.RestService;
+import com.scaffy.service.RestServiceException;
+import com.scaffy.service.ServiceBroker;
+import com.scaffy.service.ServiceNotFoundException;
 
-@RestController
-@RequestMapping("/app/api/")
 public class MasterRestController {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	
-	@Autowired
-	private GsonHttpMessageConverter httpMessageConverter;
 
 	@Autowired
-	private Validator validator;
+	private ModelUnmarshaller modelUnmarshaller;
 	
-	private HashMap<String, RestService> restServices;
-	
-	@PostConstruct
-	public void init() {
-		
-		Map<String, RestService> definedServices = applicationContext.getBeansOfType(RestService.class);
-		
-		restServices = new HashMap<String, RestService>();
-		
-		for(String ser : definedServices.keySet().toArray(new String[]{})){
-			restServices.put(
-					ser.substring(ser.lastIndexOf("_") + 1).toLowerCase(),
-					definedServices.get(ser)
-					);
-		}
-			
-	}
-	
-	public void initBinder(WebDataBinder binder) {
-	}
-	
-	private <T>T bindAndValidate(String modelName, String jsonBody, Class<T> modelClass)
-			throws BindException {
-		
-		T model = httpMessageConverter.getGson().fromJson(jsonBody, modelClass);
-		
-		BindingResult bindingResult = new MapBindingResult(new HashMap<String, Object>(), modelName); 
-		
-		validator.validate(model, bindingResult);
-		
-		if(bindingResult.hasErrors())
-			throw new BindException(bindingResult);
-		
-		return model;
-	}
-	
-	@RequestMapping(value = "/query", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-	public @ResponseBody ResponseEntity<SuccessResponse> query(
-			@RequestHeader("Search-Key") String searchKey
-			) throws InvalidCriteriaException, InvalidCriteriaSyntaxException, NoDataFoundException, BindException {
-		
-		RestSearchKey restSearchKey = bindAndValidate("Search-Key", searchKey, RestSearchKey.class);
-		
-		restSearchKey.parseAllCriterias();
-		
-		RestService restService = restServices.get(restSearchKey.getResourceName());
-		
-		List<?> result = restService.query(restSearchKey);
-		
-		return new ResponseEntity<SuccessResponse>(new SuccessResponse(result), HttpStatus.OK);
-	}
+	@Autowired
+	private ServiceBroker serviceBroker;
 	
 	@RequestMapping(value = "/{modelName}", method = RequestMethod.POST, 
 			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
@@ -101,17 +41,70 @@ public class MasterRestController {
 	public ResponseEntity<SuccessResponse> post(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException {
+			) throws BindException, ServiceNotFoundException, RestServiceException {
+
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
 		
-		RestService restService = restServices.get(modelName);
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
 		
-		Object model = bindAndValidate(modelName, body, restService.getModelClass());
+		modelUnmarshaller.validate(modelName, model);
 		
 		restService.save(model);
-		
+
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.CREATED);
+
+		return responseEntity;
+	}
+
+	@RequestMapping(value = "/attachment/{targetName}/{id}", method = RequestMethod.GET)
+	public void readAttachment(
+			HttpServletResponse response, 
+			@PathVariable("id") 
+			Long id,
+			@PathVariable("targetName")
+			String targetName
+			) throws NoDataFoundException, ServiceNotFoundException, RestServiceException, AttachmentException {
+
+		RestService attachmentRestService = serviceBroker.findService("attachment", RestService.class);
 		
+		Attachment attachment = attachmentRestService.read(id);
+		
+		AttachmentService attachmentService = serviceBroker.findBean(targetName, AttachmentService.class);
+		
+		attachmentService.readAttachment(attachment);
+		
+		new MultipartResponse(attachment).sendAttachment(response);
+	}
+	
+	@RequestMapping(value = "/multi/{modelName}", method = RequestMethod.POST, 
+			consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public ResponseEntity<SuccessResponse> multipost(
+			@ModelAttribute("model") String body,
+			@PathVariable("modelName") String modelName,
+			MultipartHttpServletRequest request
+			) throws BindException, ServiceNotFoundException, AttachmentException, RestServiceException {
+
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
+		
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
+		
+		modelUnmarshaller.validate(modelName, model);
+		
+		MultipartResponse multipartResponse = new MultipartResponse(model, request);
+		
+		AttachmentService attachmentService = serviceBroker.findBean(
+				multipartResponse.getTargetName(), 
+				AttachmentService.class);
+		
+		attachmentService.createAttachments(multipartResponse);
+		
+		restService.saveWithAttachments(multipartResponse);
+		
+		ResponseEntity<SuccessResponse> responseEntity = 
+				new ResponseEntity<SuccessResponse>(new SuccessResponse(multipartResponse), HttpStatus.CREATED);
+
 		return responseEntity;
 	}
 
@@ -120,35 +113,39 @@ public class MasterRestController {
 	public @ResponseBody ResponseEntity<SuccessResponse> put(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException {
+			) throws BindException, ServiceNotFoundException, RestServiceException {
+
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
+
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
 		
-		RestService restService = restServices.get(modelName);
-		
-		Object model = bindAndValidate(modelName, body, restService.getModelClass());
+		modelUnmarshaller.validate(modelName, model);
 		
 		restService.update(model);
-		
+
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.OK);
-		
+
 		return responseEntity;
 	}
-	
+
 	@RequestMapping(value = "/{modelName}", method = RequestMethod.DELETE, produces = "application/json;charset=utf-8")
 	public @ResponseBody ResponseEntity<SuccessResponse> delete(
 			@RequestBody String body,
 			@PathVariable("modelName") String modelName
-			) throws BindException {
+			) throws BindException, ServiceNotFoundException, RestServiceException {
+
+		RestService restService = serviceBroker.findService(modelName, RestService.class);
+
+		Object model = modelUnmarshaller.bind(body, restService.modelType());
 		
-		RestService restService = restServices.get(modelName);
-		
-		Object model = bindAndValidate(modelName, body, restService.getModelClass());
+		modelUnmarshaller.validate(modelName, model);
 		
 		restService.delete(model);
-		
+
 		ResponseEntity<SuccessResponse> responseEntity = 
 				new ResponseEntity<SuccessResponse>(new SuccessResponse(model), HttpStatus.OK);
-		
+
 		return responseEntity;
 	}
 

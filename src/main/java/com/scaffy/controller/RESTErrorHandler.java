@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -20,13 +19,12 @@ import com.scaffy.service.NoDataFoundException;
  * <p>RESTErrorHandler class.</p>
  *
  * @author 	Sherief Shawky
- * @Email 	sheshawky@informatique-eg.com
+ * @Email 	mcrakens@gmail.com
  *
  * RESTErrorHandler is an advice controller. It handles argument validation errors,
  * binding errors and finally runtime exceptions
  * @version $Id: $Id
  */
-@ControllerAdvice
 public class RESTErrorHandler {
 
 	private static Logger logger = LoggerFactory.getLogger(RESTErrorHandler.class);

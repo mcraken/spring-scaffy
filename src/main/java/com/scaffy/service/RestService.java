@@ -1,22 +1,19 @@
 package com.scaffy.service;
 
-import java.util.List;
+import com.scaffy.controller.MultipartResponse;
 
-import com.scaffy.query.exception.InvalidCriteriaException;
-import com.scaffy.query.exception.InvalidCriteriaSyntaxException;
-import com.scaffy.query.key.RestSearchKey;
 
 public interface RestService {
 	
-	public List<?> query(
-			RestSearchKey restSearchKey
-			) throws InvalidCriteriaException, InvalidCriteriaSyntaxException, NoDataFoundException;
+	public <T>T read(Object key) throws RestServiceException, NoDataFoundException;
 	
-	public <T> void save(T model);
+	public void save(Object model) throws RestServiceException;
 	
-	public <T> void update(T model);
+	public void saveWithAttachments(MultipartResponse request) throws RestServiceException;
 	
-	public <T> void delete(T model);
+	public void update(Object model) throws RestServiceException;
 	
-	public Class<?> getModelClass();
+	public void delete(Object model) throws RestServiceException;
+	
+	public Class<?> modelType();
 }
