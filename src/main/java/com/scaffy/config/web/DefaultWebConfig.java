@@ -15,6 +15,7 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.google.gson.Gson;
@@ -26,6 +27,9 @@ public class DefaultWebConfig extends WebMvcConfigurerAdapter{
 
 	@Value("${converter.gson.dateFormat}")
 	private String gsonDateFormat;
+
+	@Value("${view.resources}")
+	private String staticResources;
 	
 	@Autowired
 	private GsonHttpMessageConverter gsonHttpMessageConverter;
@@ -51,6 +55,18 @@ public class DefaultWebConfig extends WebMvcConfigurerAdapter{
 		for(HandlerInterceptor interceptor : interceptors)
 			registry.addInterceptor(interceptor);
 		
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		
+		String[] indvidiualResources = staticResources.split(",");
+		
+		for(String indvidiualResource : indvidiualResources){
+			registry
+			.addResourceHandler(indvidiualResource.split(":")[0])
+			.addResourceLocations(indvidiualResource.split(":")[1]);
+		}
 	}
 	
 	@Bean
